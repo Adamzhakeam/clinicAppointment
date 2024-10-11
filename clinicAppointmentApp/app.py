@@ -28,7 +28,7 @@ def add_user():
     from db import insertUser
     user_data = request.json  # Get the user data from the request body
 
-    if not user_data or not all(key in user_data for key in ['userName', 'password', 'email', 'phoneNumber', 'role']):
+    if not user_data or not all(key in user_data for key in ['userName', 'password', 'email', 'phoneNumber', 'roleId']):
         return jsonify({"error": "Missing required fields"}), 400  # Return an error if any field is missing
 
     try:
@@ -216,7 +216,8 @@ def add_appointment():
 
     try:
         new_appointment = insertAppointment(appointment_data)
-        return jsonify({"status": "success", "appointment": {"doctor_id": new_appointment.doctor_id, "patient_id": new_appointment.patient_id}}), 201
+        return jsonify({"status": "success", "appointment": {"doctor_id": new_appointment.doctor_id,
+                                                             "patient_id": new_appointment.patient_id}}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     

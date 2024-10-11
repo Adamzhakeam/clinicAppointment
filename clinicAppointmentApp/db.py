@@ -11,11 +11,11 @@ def insertUser(userDetails:dict)->dict:
     '''
         this function is responsible for inserting 
         user into the dataBase 
-        @param:'username','password','email','phoneNumber','roleId' are the expected keys
+        @param userDetails:'username','password','email','phoneNumber','roleId' are the expected keys
     '''
     passwordHash = kutils.encryption.hash(userDetails['password'])
     newUser = User(username=userDetails['userName'],password= passwordHash,email=userDetails['email']
-                   ,phone=userDetails['phoneNumber'],roleId = userDetails['role'])
+                   ,phone=userDetails['phoneNumber'],roleId = userDetails['roleId'])
     db.session.add(newUser)
     db.session.commit()
     return newUser
