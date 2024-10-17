@@ -1,64 +1,65 @@
-'''
-    this module is meant to handle all the database logic and all the logic of 
-    the application forexample all the logic for inserting,updating,altering,
-    deleting to the database 
-'''
-import kisa_utils as kutils 
+import kisa_utils as kutils
+from models import db, User, Doctor,Specialisation , Appointment, Roles, Patient,DoctorAvailability
 
-from models import db,User,Doctor,Department,Appointment,Roles,Patient
-# ----the functions below are responsible for handling users database logic
-def insertUser(userDetails:dict)->dict:
+# ---- Users database logic ----
+def insertUser(userDetails: dict) -> dict:
     '''
-        this function is responsible for inserting 
-        user into the dataBase 
-        @param userDetails:'username','password','email','phoneNumber','roleId' are the expected keys
+    Inserts a user into the database.
+    @param userDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phoneNumber', 'password', 'roleId'
     '''
     passwordHash = kutils.encryption.hash(userDetails['password'])
-    newUser = User(username=userDetails['userName'],password= passwordHash,email=userDetails['email']
-                   ,phone=userDetails['phoneNumber'],roleId = userDetails['roleId'])
+    newUser = User(
+        firstName=userDetails['firstName'],
+        lastName=userDetails['lastName'],
+        email=userDetails['email'],
+        phone=userDetails['phoneNumber'],
+        password=passwordHash,
+        roleId=userDetails['roleId']
+    )
     db.session.add(newUser)
     db.session.commit()
     return newUser
 
 def fetchAllUsers():
     '''
-        this function is responsible for fetching 
-        all the users from the database 
+    Fetches all users from the database.
     '''
     allUsers = User.query.all()
-    
-    response = [{'username':user.username,"email":user.email,"phone":user.phone,
-                "roleId":user.roleId,}for user in allUsers]
+    response = [{'firstName': user.firstName, 'lastName': user.lastName, "email": user.email, "phone": user.phone, "roleId": user.roleId} for user in allUsers]
     return response
 
-def fetchUserByPhoneNumber(userDetails:dict):
+def fetchUserByPhoneNumber(userDetails: dict):
     '''
-        this function is responsible for fetching users by there phone Number
-        @param UserDetails:'phoneNumber' is the expected key 
+    Fetches a user by their phone number.
+    @param userDetails: dictionary with 'phoneNumber' key
     '''
     user = User.query.filter_by(phone=userDetails['phoneNumber']).first()
-    response = {'username':user.username,'email':user.email,'phonenumber':user.id}
-    return response
+    if user:
+        response = {'firstName': user.firstName, 'lastName': user.lastName, 'email': user.email, 'phone': user.phone}
+        return response
+    return {"error": "User not found"}, 404
 
-def fetchUserById(userDetails:dict):
+def fetchUserById(userDetails: dict):
     '''
-        this function is responsible for fetching user by id
-        @paramUserDetails:'userId' is the expected key
+    Fetches a user by their ID.
+    @param userDetails: dictionary with 'userId' key
     '''
-    user = User.query.filter_by(id=userDetails['userId']).first()
-    response = {'username':user.username,"email":user.email,"phone":user.phone,
-                "roleId":user.roleId,}
-    return response 
+    user = User.query.filter_by(userId=userDetails['userId']).first()
+    if user:
+        response = {'firstName': user.firstName, 'lastName': user.lastName, 'email': user.email, 'phone': user.phone, 'roleId': user.roleId}
+        return response
+    return {"error": "User not found"}, 404
 
-# --the modules below are responsible for handling the database logic for doctors 
+# ---- Doctors database logic ----
 def insertDoctor(doctorDetails: dict) -> dict:
     '''
-    Insert a doctor into the database.
-    @param: doctorDetails - dictionary with keys: 'name', 'email', 'phone', 'specialization', 'password', 'department_id'
+    Inserts a doctor into the database.
+    @param doctorDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phone', 'specialization', 'password', 'department_id'
     '''
     passwordHash = kutils.encryption.hash(doctorDetails['password'])
     newDoctor = Doctor(
-        name=doctorDetails['name'],
+        firstName=doctorDetails['firstName'],
+        lastName=doctorDetails['lastName'],
         email=doctorDetails['email'],
         phone=doctorDetails['phone'],
         specialization=doctorDetails['specialization'],
@@ -71,64 +72,44 @@ def insertDoctor(doctorDetails: dict) -> dict:
 
 def fetchAllDoctors():
     '''
-        this function is responsible for fetching all doctors from the database 
+    Fetches all doctors from the database.
     '''
     doctors = Doctor.query.all()
-    response = [{'username':user.name,"email":user.email,"phone":user.phone,
-                "roleId":user.role,}for user in doctors]
-    return response 
+    response = [{'firstName': doctor.firstName, 'lastName': doctor.lastName, "email": doctor.email, "phone": doctor.phone, "specialization": doctor.specialization} for doctor in doctors]
+    return response
 
-def fetchDoctorsByPhoneNumber(doctorDetails:dict):
+def fetchDoctorByPhoneNumber(doctorDetails: dict):
     '''
-        this function is responsible for fetching doctors by there phoneNumber 
-        @param doctorDetails:'phoneNumber' is the expected key 
+    Fetches a doctor by their phone number.
+    @param doctorDetails: dictionary with 'phoneNumber' key
     '''
     doctor = Doctor.query.filter_by(phone=doctorDetails['phoneNumber']).first()
-    response = {'username':doctor.name,"email":doctor.email,"phone":doctor.phone,
-                "role":doctor.role}
-    return response
+    if doctor:
+        response = {'firstName': doctor.firstName, 'lastName': doctor.lastName, 'email': doctor.email, 'phone': doctor.phone}
+        return response
+    return {"error": "Doctor not found"}, 404
 
-def fetchDoctorById(doctorDetails:dict):
+def fetchDoctorById(doctorDetails: dict):
     '''
-        this function is responsible for fetching doctors by Id 
-        @param doctorDetails:'doctorId' is the expected key
+    Fetches a doctor by their ID.
+    @param doctorDetails: dictionary with 'doctorId' key
     '''
     doctor = Doctor.query.filter_by(id=doctorDetails['doctorId']).first()
-    response = {'username':doctor.name,"email":doctor.email,"phone":doctor.phone,
-                "role":doctor.role}
-    return response  
+    if doctor:
+        response = {'firstName': doctor.firstName, 'lastName': doctor.lastName, 'email': doctor.email, 'phone': doctor.phone, 'specialization': doctor.specialization}
+        return response
+    return {"error": "Doctor not found"}, 404
 
-def fetchDoctorsBySpecialization(doctorDetails:dict):
-    '''
-    this function is responsible for fetching doctors with by specialization 
-    @param doctorDetails: 'specialization' is the expected key
-    '''
-    doctors = Doctor.query.filter(Doctor.specialization == doctorDetails['specialization']).all()
-    response = [{'username':user.name,"email":user.email,"phone":user.phone,
-                "roleId":user.role,}for user in doctors]
-    
-    return response
-
-def fetchDoctorByDepartment(doctorDetails:dict):
-    '''
-        this function is responsible for fetching doctors by department
-        @param doctorDetails:'departmentId is the expected key 
-    '''
-    doctors = Doctor.query.filter(Doctor.department_id == doctorDetails['departmentId'])
-    response = [{'username':user.name,"email":user.email,"phone":user.phone,
-                "roleId":user.role,}for user in doctors]
-     
-    return response 
-    
-# -- the functions below are responsible for handling patient logic in the database 
+# ---- Patients database logic ----
 def insertPatient(patientDetails: dict) -> dict:
     '''
-    Insert a patient into the database.
-    @param: patientDetails - dictionary with keys: 'name', 'email', 'phone', 'password'
+    Inserts a patient into the database.
+    @param patientDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phone', 'password'
     '''
     passwordHash = kutils.encryption.hash(patientDetails['password'])
     newPatient = Patient(
-        name=patientDetails['name'],
+        firstName=patientDetails['firstName'],
+        lastName=patientDetails['lastName'],
         email=patientDetails['email'],
         phone=patientDetails['phone'],
         password=passwordHash
@@ -139,58 +120,47 @@ def insertPatient(patientDetails: dict) -> dict:
 
 def fetchAllPatients():
     '''
-        this function is responsible for fetching all patients from the database 
+    Fetches all patients from the database.
     '''
     patients = Patient.query.all()
-    response = [{'username':user.name,"email":user.email,"phone":user.phone,
-                "roleId":user.role,}for user in patients]
+    response = [{'firstName': patient.firstName, 'lastName': patient.lastName, "email": patient.email, "phone": patient.phone} for patient in patients]
     return response
 
-def fetchPatientsById(doctorDetails:dict):
-    '''
-        this function is responsible for fetching doctors by Id 
-        @param doctorDetails:'patientId' is the expected key
-    '''
-    patient = Patient.query.filter_by(id=doctorDetails['doctorId']).first()
-    response = {'username':patient.name,"email":patient.email,"phone":patient.phone}
-    return response 
+# # ---- Departments database logic ----
+# def insertDepartment(departmentDetails: dict) -> dict:
+#     '''
+#     Inserts a department into the database.
+#     @param departmentDetails: dictionary with key 'name'
+#     '''
+#     newDepartment = Department(name=departmentDetails['name'])
+#     db.session.add(newDepartment)
+#     db.session.commit()
+#     return newDepartment
 
-# --the logic below is responsible for handling  department database querries
+# def fetchAllDepartments():
+#     '''
+#     Fetches all departments from the database.
+#     '''
+#     departments = Department.query.all()
+#     response = [{'departmentName': department.name} for department in departments]
+#     return response
 
-def insertDepartment(departmentDetails: dict) -> dict:
-    '''
-    Insert a department into the database.
-    @param: departmentDetails - dictionary with keys: 'name'
-    '''
-    newDepartment = Department(
-        name=departmentDetails['name']
-    )
-    db.session.add(newDepartment)
-    db.session.commit()
-    return newDepartment
+# def fetchDepartmentById(departmentDetails: dict):
+#     '''
+#     Fetches a department by its ID.
+#     @param departmentDetails: dictionary with 'departmentId' key
+#     '''
+#     department = Department.query.filter_by(id=departmentDetails['departmentId']).first()
+#     if department:
+#         response = {'departmentName': department.name, 'departmentId': department.id}
+#         return response
+#     return {"error": "Department not found"}, 404
 
-def fetchAllDepartments():
-    '''
-        this function is responsible for fetching all departments from the database 
-    '''
-    departments = Department.query.all()
-    response = [{'departmentName':department.name,}for department in departments]
-    return response
-
-def departmentById(departmentDetails:dict):
-    '''
-        this function is responsible for fetching doctors by Id 
-        @param departmentDetails:'departmentId' is the expected key
-    '''
-    department = Department.query.filter_by(id=departmentDetails['doctorId']).first()
-    response = {'departmentName':department.name,'departmentId':department.id}
-    return response 
-
-# --- the modules below are responsible for handling appointment logic 
+# ---- Appointments database logic ----
 def insertAppointment(appointmentDetails: dict) -> dict:
     '''
-    Insert an appointment into the database.
-    @param: appointmentDetails - dictionary with keys: 'doctor_id', 'patient_id', 'appointment_date', 'appointment_time', 'appointment_status'
+    Inserts an appointment into the database.
+    @param appointmentDetails: dictionary with keys: 'doctor_id', 'patient_id', 'appointment_date', 'appointment_time', 'appointment_status'
     '''
     newAppointment = Appointment(
         doctor_id=appointmentDetails['doctor_id'],
@@ -203,87 +173,10 @@ def insertAppointment(appointmentDetails: dict) -> dict:
     db.session.commit()
     return newAppointment
 
-def fetchAllSpecificAppointments(appointmentDetails: dict):
-    '''
-        This function is responsible for fetching appointments 
-        for a specific doctor and patient
-        @param appointmentDetails: 'doctorId' and 'patientId' are the expected keys
-    '''
-    doctor_id = appointmentDetails.get('doctorId')
-    patient_id = appointmentDetails.get('patientId')
-
-    if not doctor_id or not patient_id:
-        return {"error": "Both doctorId and patientId are required"}, 400
-
-    appointments = (
-        Appointment.query
-        .join(Doctor, Appointment.doctor_id == Doctor.id)
-        .join(Patient, Appointment.patient_id == Patient.id)
-        .filter(Doctor.id == doctor_id, Patient.id == patient_id)
-        .all()
-    )
-
-    response = [{'date': appointment.appointment_date, 
-                 'time': appointment.appointment_time, 
-                 'status': appointment.appointment_status} 
-                for appointment in appointments]
-    return response
-def fetchAppointmentsByPatientId(appointmentDetails: dict):
-    '''
-        This function is responsible for fetching appointments 
-        for a specific patient by their patientId
-        @param appointmentDetails: 'patientId' is the expected key
-    '''
-    patient_id = appointmentDetails.get('patientId')
-
-    if not patient_id:
-        return {"error": "patientId is required"}, 400
-
-    appointments = (
-        Appointment.query
-        .join(Patient, Appointment.patient_id == Patient.id)
-        .filter(Patient.id == patient_id)
-        .all()
-    )
-
-    response = [{'date': appointment.appointment_date, 
-                 'time': appointment.appointment_time, 
-                 'status': appointment.appointment_status, 
-                 'doctorId': appointment.doctor_id} 
-                for appointment in appointments]
-    return response
-
-def fetchAppointmentsByPatientIdAndStatus(appointmentDetails: dict):
-    '''
-        This function is responsible for fetching appointments 
-        for a specific patient by their patientId and appointment status
-        @param appointmentDetails: 'patientId' and 'status' are the expected keys
-    '''
-    patient_id = appointmentDetails.get('patientId')
-    status = appointmentDetails.get('status')
-
-    if not patient_id or not status:
-        return {"error": "Both patientId and status are required"}, 400
-
-    appointments = (
-        Appointment.query
-        .join(Patient, Appointment.patient_id == Patient.id)
-        .filter(Patient.id == patient_id, Appointment.appointment_status == status)
-        .all()
-    )
-
-    response = [{'date': appointment.appointment_date, 
-                 'time': appointment.appointment_time, 
-                 'status': appointment.appointment_status, 
-                 'doctorId': appointment.doctor_id} 
-                for appointment in appointments]
-    return response
-
 def fetchAppointmentsByDoctorIdAndStatus(appointmentDetails: dict):
     '''
-        This function is responsible for fetching appointments 
-        for a specific doctor by their doctorId and appointment status.
-        @param appointmentDetails: 'doctorId' and 'status' are the expected keys.
+    Fetches appointments for a specific doctor by their ID and appointment status.
+    @param appointmentDetails: dictionary with 'doctorId' and 'status' keys
     '''
     doctor_id = appointmentDetails.get('doctorId')
     status = appointmentDetails.get('status')
@@ -291,42 +184,116 @@ def fetchAppointmentsByDoctorIdAndStatus(appointmentDetails: dict):
     if not doctor_id or not status:
         return {"error": "Both doctorId and status are required"}, 400
 
-    appointments = (
-        Appointment.query
-        .join(Doctor, Appointment.doctor_id == Doctor.id)
-        .filter(Doctor.id == doctor_id, Appointment.appointment_status == status)
-        .all()
-    )
-
-    response = [{'date': appointment.appointment_date, 
-                 'time': appointment.appointment_time, 
-                 'status': appointment.appointment_status, 
-                 'patientId': appointment.patient_id} 
-                for appointment in appointments]
+    appointments = Appointment.query.filter_by(doctor_id=doctor_id, appointment_status=status).all()
+    response = [{'appointment_date': appointment.appointment_date, 'appointment_time': appointment.appointment_time, 'patient_id': appointment.patient_id} for appointment in appointments]
     return response
 
-
+# ---- Roles database logic ----
 def insertRole(roleDetails: dict) -> dict:
     '''
-    Insert a role into the database.
-    @param: roleDetails - dictionary with keys: 'roleName'
+    Inserts a role into the database.
+    @param roleDetails: dictionary with 'roleName' key
     '''
-    newRole = Roles(
-        roleName=roleDetails['roleName']
-    )
+    newRole = Roles(roleName=roleDetails['roleName'])
     db.session.add(newRole)
     db.session.commit()
     return newRole
+# ---- Specialisation database logic ----
+def insertSpecialisation(specialisationDetails: dict) -> dict:
+    '''
+    Inserts a specialisation into the database.
+    @param specialisationDetails: dictionary with 'name' key
+    '''
+    newSpecialisation = Specialisation(name=specialisationDetails['name'])
+    db.session.add(newSpecialisation)
+    db.session.commit()
+    return newSpecialisation
 
-if __name__ == "__main__":
-    user = {
-        'userName':"johndoe",
-        'password':"1234",
-        'email':'johndoe@gmail.com',
-        'phoneNumber':'0768678678',
-        'role':'admin'
-        
-    }
-    print(insertUser(user))
-    pass
+def fetchAllSpecialisations():
+    '''
+    Fetches all specialisations from the database.
+    '''
+    specialisations = Specialisation.query.all()
+    response = [{'specialisationName': spec.name} for spec in specialisations]
+    return response
+
+def fetchSpecialisationById(specialisationDetails: dict):
+    '''
+    Fetches a specialisation by its ID.
+    @param specialisationDetails: dictionary with 'specialisationId' key
+    '''
+    specialisation = Specialisation.query.filter_by(id=specialisationDetails['specialisationId']).first()
+    if specialisation:
+        response = {'specialisationName': specialisation.name}
+        return response
+    return {"error": "Specialisation not found"}, 404
+# ---- Doctor Availability database logic ----
+def insertDoctorAvailability(availabilityDetails: dict) -> dict:
+    '''
+    Inserts doctor availability into the database.
+    @param availabilityDetails: dictionary with keys: 'doctorId', 'available_date', 'start_time', 'end_time'
+    '''
+    newAvailability = DoctorAvailability(
+        doctor_id=availabilityDetails['doctorId'],
+        available_date=availabilityDetails['available_date'],
+        start_time=availabilityDetails['start_time'],
+        end_time=availabilityDetails['end_time']
+    )
+    db.session.add(newAvailability)
+    db.session.commit()
+    return newAvailability
+
+def fetchDoctorAvailabilityByDoctorId(availabilityDetails: dict):
+    '''
+    Fetches availability for a doctor by their ID.
+    @param availabilityDetails: dictionary with 'doctorId' key
+    '''
+    doctor_id = availabilityDetails['doctorId']
+    availability = DoctorAvailability.query.filter_by(doctor_id=doctor_id).all()
+    response = [{'available_date': avail.available_date, 'start_time': avail.start_time, 'end_time': avail.end_time} for avail in availability]
+    return response
+
+def fetchDoctorAvailabilityByDate(availabilityDetails: dict):
+    '''
+    Fetches availability for a doctor on a specific date.
+    @param availabilityDetails: dictionary with 'doctorId' and 'date' keys
+    '''
+    doctor_id = availabilityDetails['doctorId']
+    date = availabilityDetails['date']
+    availability = DoctorAvailability.query.filter_by(doctor_id=doctor_id, available_date=date).all()
+    response = [{'start_time': avail.start_time, 'end_time': avail.end_time} for avail in availability]
+    return response
+
+# ---- Appointment Confirmation database logic ----
+def confirmAppointment(appointmentDetails: dict) -> dict:
+    '''
+    Confirms an appointment in the database.
+    @param appointmentDetails: dictionary with 'appointmentId' and 'confirmationStatus' keys
+    '''
+    appointment = Appointment.query.filter_by(id=appointmentDetails['appointmentId']).first()
+    if not appointment:
+        return {"error": "Appointment not found"}, 404
     
+    appointment.confirmation_status = appointmentDetails['confirmationStatus']
+    db.session.commit()
+    return appointment
+
+def fetchConfirmedAppointmentsByDoctorId(appointmentDetails: dict):
+    '''
+    Fetches confirmed appointments for a specific doctor by their ID.
+    @param appointmentDetails: dictionary with 'doctorId' key
+    '''
+    doctor_id = appointmentDetails['doctorId']
+    confirmed_appointments = Appointment.query.filter_by(doctor_id=doctor_id, confirmation_status='confirmed').all()
+    response = [{'appointment_date': appt.appointment_date, 'patient_id': appt.patient_id, 'appointment_time': appt.appointment_time} for appt in confirmed_appointments]
+    return response
+
+def fetchConfirmedAppointmentsByPatientId(appointmentDetails: dict):
+    '''
+    Fetches confirmed appointments for a specific patient by their ID.
+    @param appointmentDetails: dictionary with 'patientId' key
+    '''
+    patient_id = appointmentDetails['patientId']
+    confirmed_appointments = Appointment.query.filter_by(patient_id=patient_id, confirmation_status='confirmed').all()
+    response = [{'appointment_date': appt.appointment_date, 'doctor_id': appt.doctor_id, 'appointment_time': appt.appointment_time} for appt in confirmed_appointments]
+    return response
