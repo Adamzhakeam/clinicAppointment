@@ -1,3 +1,9 @@
+'''
+    this module is meant to handle all the database logic and all the logic of 
+    the application forexample all the logic for inserting,updating,altering,
+    deleting to the database 
+'''
+
 import kisa_utils as kutils
 from models import db, User, Doctor,Specialisation , Appointment, Roles, Patient,DoctorAvailability
 
@@ -18,6 +24,7 @@ def insertUser(userDetails: dict) -> dict:
     )
     db.session.add(newUser)
     db.session.commit()
+    # print('>>>>>>>',newUser)
     return newUser
 
 def fetchAllUsers():

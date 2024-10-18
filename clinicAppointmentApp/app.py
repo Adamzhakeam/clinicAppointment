@@ -1,14 +1,35 @@
-from flask import Flask, request, jsonify
+'''
+    this module is responsible for 
+'''
+
 from marshmallow import Schema, fields, ValidationError
+from flask import Flask,request,jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from models import db, User, Doctor, Patient, Appointment,Specialisation,AppointmentConfirmation,Roles,DoctorAvailability
+from flask_cors import CORS
+import kisa_utils as kutils
 
+
+# Initialize Flask application
 app = Flask(__name__)
+CORS(app)
 
-# Define schemas for validation
+# Configure the SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clinicAppointment.db'  # SQLite database file
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize the database and migration tool
+db.init_app(app)
+migrate = Migrate(app, db)
+
 class UserSchema(Schema):
-    name = fields.Str(required=True)
-    phone_number = fields.Str(required=True)
+    firstName = fields.Str(required=True)
+    lastName = fields.Str(required=True)
+    phoneNumber = fields.Str(required=True)
+    password = fields.Str(required=True)
     email = fields.Email(required=True)
-
+    roleId = fields.Str(required=True)
 class DoctorSchema(Schema):
     name = fields.Str(required=True)
     phone_number = fields.Str(required=True)
@@ -51,7 +72,17 @@ def createUser():
     
     from db import insertUser  # Lazy import
     newUser = insertUser(userDetails)
-    return jsonify(newUser), 201
+    print('>>>>>>>>>>>>>>>>',newUser)
+    return jsonify(
+        {"status":"Success",
+         "userName":f"{newUser.firstName},{newUser.lastName}"}), 201
+
+#  "status": "success",
+#             "user": {
+#                 "username": new_user.username,
+#                 "email": new_user.email
+#             }
+
 
 @app.route('/fetchAllUsers', methods=['GET'])
 def fetchAllUsers():
@@ -231,4 +262,7 @@ def fetchDoctorAvailabilityByDoctorId():
     return jsonify(availability), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    with app.app_context():
+        db.create_all()
+
+    app.run(debug=True, host='0.0.0.0', port = 5000)

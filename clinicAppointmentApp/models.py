@@ -11,6 +11,7 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     phone = db.Column(db.String(15), unique=True, nullable=False)
     roleId = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)  # Corrected Foreign Key
+    others = db.Column(db.String(200), nullable=True)
     
     role = db.relationship('Roles', back_populates='users')  # Relationship
 
@@ -64,7 +65,6 @@ class Specialisation(db.Model):
 
     doctors = db.relationship('Doctor', back_populates='specialization')  # Fixed relationship
 
-# New Model for Appointment Confirmation
 
 class AppointmentConfirmation(db.Model):
     __tablename__ = 'appointment_confirmations'
