@@ -1,6 +1,6 @@
 '''
     this module is meant to handle all the database logic and all the logic of 
-    the application forexample all the logic for inserting,updating,altering,
+    the application for example all the logic for inserting,updating,altering,
     deleting to the database 
 '''
 

@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import './Login.css'; // Import the corresponding CSS file for styling
+import React, { useState } from "react";
+import "./Login.css"; // Import the corresponding CSS file for styling
 
 const Login = () => {
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
     // You can add logic to handle login (e.g., API call to your backend)
-    console.log('Phone:', phone, 'Password:', password);
+    console.log("Phone:", phone, "Password:", password);
   };
 
   const handleForgotPassword = () => {
     // This can be a redirect or a modal opening, depending on your routing setup
-    alert('Forgot password clicked!');
+    alert("Forgot password clicked!");
   };
 
   return (
@@ -52,4 +52,3 @@ const Login = () => {
 };
 
 export default Login;
-

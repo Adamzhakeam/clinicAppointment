@@ -1,0 +1,73 @@
+/* DoctorRegistration.css */
+
+.doctor-registration {
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+}
+
+h2 {
+    color: #4b8a3c; /* Army Green */
+    margin-bottom: 20px;
+}
+
+form {
+    max-width: 500px; /* Width of the form */
+    width: 90%; /* Responsive width */
+    padding: 30px; /* Padding for form */
+    background: #ffffff;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Depth */
+}
+
+form div {
+    margin-bottom: 20px; /* Spacing between inputs */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 12px; /* Padding for inputs */
+    border: 1px solid #ccc;
+    border-radius: 6px; /* Rounded edges */
+    font-size: 16px;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="password"]:focus,
+select:focus {
+    border-color: #4b8a3c; /* Army Green */
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px; /* Padding for button */
+    background-color: #4b8a3c; /* Army Green */
+    color: white;
+    border: none;
+    border-radius: 6px; /* Rounded corners */
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #3c742f; /* Darker Army Green */
+}
+

@@ -1,12 +1,18 @@
-import logo from "./logo.svg";
+// import logo from "./logo.svg";
 import "./App.css";
 import React from "react";
-import Login from "./components/Login";
+import Login from "./components/Login/Login";
+import UserRegistration from "./components/UserRegistration/UserRegistration";
+import DoctorRegistration from "./components/DoctorRegistration/DoctorRegistration";
+import PatientRegistration from "./components/PatientRegistration/PatientRegistration";
 
 function App() {
   return (
     <div className="App">
-      <Login />
+      {/* <Login /> */}
+      {/* <UserRegistration /> */}
+      {/* <DoctorRegistration /> */}
+      <PatientRegistration />
     </div>
     //   <div className="App">
     //     <header className="App-header">

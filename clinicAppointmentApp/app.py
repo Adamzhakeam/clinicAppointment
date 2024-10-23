@@ -72,7 +72,7 @@ def createUser():
     
     from db import insertUser  # Lazy import
     newUser = insertUser(userDetails)
-    print('>>>>>>>>>>>>>>>>',newUser)
+    # print('>>>>>>>>>>>>>>>>',newUser)
     return jsonify(
         {"status":"Success",
          "userName":f"{newUser.firstName},{newUser.lastName}"}), 201
@@ -84,7 +84,7 @@ def createUser():
 #             }
 
 
-@app.route('/fetchAllUsers', methods=['GET'])
+@app.route('/fetchAllUsers', methods=['POST'])
 def fetchAllUsers():
     from db import fetchAllUsers  # Lazy import
     users = fetchAllUsers()
