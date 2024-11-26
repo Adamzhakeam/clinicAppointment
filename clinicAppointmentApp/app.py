@@ -105,7 +105,7 @@ class AppointmentSchema(Schema):
     # date = fields.Date(required=True)
 
 class RoleSchema(Schema):
-    role_name = fields.Str(required=True)
+    roleName = fields.Str(required=True)
 
 class SpecialisationSchema(Schema):
     specialization_name = fields.Str(required=True)
