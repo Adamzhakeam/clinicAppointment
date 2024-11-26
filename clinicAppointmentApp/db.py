@@ -4,7 +4,7 @@
     deleting to the database 
 '''
 
-import kisa_utils as kutils
+# import kisa_utils as kutils
 from models import db, User, Doctor,Specialisation , Appointment, Roles, Patient,DoctorAvailability
 
 # ---- Users database logic ----
@@ -13,7 +13,7 @@ def insertUser(userDetails: dict) -> dict:
     Inserts a user into the database.
     @param userDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phoneNumber', 'password', 'roleId'
     '''
-    passwordHash = kutils.encryption.hash(userDetails['password'])
+    passwordHash = userDetails['password']
     newUser = User(
         firstName=userDetails['firstName'],
         lastName=userDetails['lastName'],
@@ -63,7 +63,7 @@ def insertDoctor(doctorDetails: dict) -> dict:
     Inserts a doctor into the database.
     @param doctorDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phone', 'specialization', 'password', 'department_id'
     '''
-    passwordHash = kutils.encryption.hash(doctorDetails['password'])
+    passwordHash = doctorDetails['password']
     newDoctor = Doctor(
         firstName=doctorDetails['firstName'],
         lastName=doctorDetails['lastName'],
@@ -113,7 +113,7 @@ def insertPatient(patientDetails: dict) -> dict:
     Inserts a patient into the database.
     @param patientDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phone', 'password'
     '''
-    passwordHash = kutils.encryption.hash(patientDetails['password'])
+    passwordHash = patientDetails['password']
     newPatient = Patient(
         firstName=patientDetails['firstName'],
         lastName=patientDetails['lastName'],

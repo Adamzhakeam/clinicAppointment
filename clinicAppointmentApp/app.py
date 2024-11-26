@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from models import db, User, Doctor, Patient, Appointment,Specialisation,AppointmentConfirmation,Roles,DoctorAvailability
 from flask_cors import CORS
-import kisa_utils as kutils
+# import kisa_utils as kutils
 
 
 # Initialize Flask application
