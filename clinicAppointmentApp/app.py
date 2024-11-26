@@ -9,6 +9,7 @@ from flask_migrate import Migrate
 from models import db, User, Doctor, Patient, Appointment,Specialisation,AppointmentConfirmation,Roles,DoctorAvailability
 from flask_cors import CORS
 from auth_utils import generate_token, decode_token
+from functools import wraps
 
 # import kisa_utils as kutils
 
@@ -135,9 +136,25 @@ def logIn():
     if errors:
         return errors
     from db import login
-    loginResponse = login(userDetails)
-    return loginResponse
+    user = login(userDetails)
+    if user['status']:
+        user_id = user['log']['userId']
+        role_id = user['log']['roleId']
+        user_name = f"{user['log']['firstName'],user['log']['lastName']}"
+        token = generate_token(user_id, role_id, user_name, app.config['SECRET_KEY'])
+        return jsonify({'status':True,'token':token})
+        
+    return user
 
+@app.route('/userprofile',methods=['POST'])
+@token_required(['user','admin'])
+def userProfile():
+    userName = request.user['user_name']
+    roleId = request.user['role_id']
+    from db import fetchRoleById
+    role = fetchRoleById({'roleId':roleId})
+    
+    return jsonify({'status':True, 'userName':userName})
 @app.route('/createUser', methods=['POST'])
 def createUser():
     userDetails = request.json

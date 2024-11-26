@@ -1,18 +1,20 @@
 // import logo from "./logo.svg";
 import "./App.css";
 import React from "react";
-import Login from "./components/Login/Login";
-import UserRegistration from "./components/UserRegistration/UserRegistration";
-import DoctorRegistration from "./components/DoctorRegistration/DoctorRegistration";
-import PatientRegistration from "./components/PatientRegistration/PatientRegistration";
+// import Login from "./components/Login/Login";
+import UserDashboard from "./components/UserDashboard/UserDashboard";
+// import UserRegistration from "./components/UserRegistration/UserRegistration";
+// import DoctorRegistration from "./components/DoctorRegistration/DoctorRegistration";
+// import PatientRegistration from "./components/PatientRegistration/PatientRegistration";
 
 function App() {
   return (
     <div className="App">
       {/* <Login /> */}
+      <UserDashboard/>
       {/* <UserRegistration /> */}
       {/* <DoctorRegistration /> */}
-      <PatientRegistration />
+      {/* <PatientRegistration /> */}
     </div>
     //   <div className="App">
     //     <header className="App-header">
