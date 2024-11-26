@@ -237,10 +237,10 @@ def fetchSpecialisationById(specialisationDetails: dict):
 
 def fetchRoleById(roleDetails:dict):
     '''
-        this function si responsible for fetching roles by id from the database 
-        @param: 'id' is the expected key in the dictionary
+        this function is responsible for fetching roles by id from the database 
+        @param: 'roleId' is the expected key in the dictionary
     '''
-    role = Roles.query.filter_by(id=roleDetails['id']).first()
+    role = Roles.query.filter_by(id=roleDetails['roleId']).first()
     if role:
         response = {'role':role.roleName}
         return response

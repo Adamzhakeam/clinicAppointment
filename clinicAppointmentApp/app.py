@@ -49,7 +49,7 @@ def token_required(roles):
                 if not data:
                     return jsonify({'status': False, 'log': 'Token is invalid or expired'}), 403
 
-                roleFetchResult = fetchRole({'roleId':data['role_id']})
+                roleFetchResult = fetchRoleById({'roleId':data['role_id']})
                 
                 if roleFetchResult['status']:
                     if roleFetchResult['log'][0]['role'] not in roles:
