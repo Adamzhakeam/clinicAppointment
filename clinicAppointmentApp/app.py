@@ -8,6 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from models import db, User, Doctor, Patient, Appointment,Specialisation,AppointmentConfirmation,Roles,DoctorAvailability
 from flask_cors import CORS
+from auth_utils import generate_token, decode_token
+
 # import kisa_utils as kutils
 
 
@@ -18,10 +20,57 @@ CORS(app)
 # Configure the SQLite database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clinicAppointment.db'  # SQLite database file
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = "xzhf bphb kwuz ybzj"
 
 # Initialize the database and migration tool
 db.init_app(app)
 migrate = Migrate(app, db)
+
+def token_required(roles):
+    from db import fetchRoleById
+    
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            token = request.headers.get('Authorization')
+
+            if not token:
+                return jsonify({'status': False, 'log': 'Token is missing'}), 403
+
+            # Extract the token from the 'Bearer' format
+            try:
+                token = token.split()[1]
+                print('>>>>>>>>>>>>>>>>token >>>',token)
+            except IndexError:
+                return jsonify({'status': False, 'log': 'Token format is invalid'}), 403
+
+            try:
+                data = decode_token(token, app.config['SECRET_KEY'])
+                if not data:
+                    return jsonify({'status': False, 'log': 'Token is invalid or expired'}), 403
+
+                roleFetchResult = fetchRole({'roleId':data['role_id']})
+                
+                if roleFetchResult['status']:
+                    if roleFetchResult['log'][0]['role'] not in roles:
+                        return jsonify({'status': False, 'log': 'Permission denied'}), 403
+                else:
+                    return jsonify({'status': False, 'log': 'Permission denied'}), 403
+
+
+                # if data['role_id'] not in roles:
+                #     print('>>>>>>>>>>>>>>>>>>>>>>>>>roleId',data['role_id'])
+                #     return jsonify({'status': False, 'log': 'Permission denied'}), 403
+
+                # Attach user data to the request
+                request.user = data
+            except Exception as e:
+                return jsonify({'status': False, 'log': 'Token is invalid'}), 403
+
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 
 class UserSchema(Schema):
     firstName = fields.Str(required=True)

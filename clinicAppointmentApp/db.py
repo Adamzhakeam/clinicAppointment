@@ -234,6 +234,18 @@ def fetchSpecialisationById(specialisationDetails: dict):
         response = {'specialisationName': specialisation.name}
         return response
     return {"error": "Specialisation not found"}, 404
+
+def fetchRoleById(roleDetails:dict):
+    '''
+        this function si responsible for fetching roles by id from the database 
+        @param: 'id' is the expected key in the dictionary
+    '''
+    role = Roles.query.filter_by(id=roleDetails['id']).first()
+    if role:
+        response = {'role':role.roleName}
+        return response
+    return {"error":"role has not been"}, 404
+
 # ---- Doctor Availability database logic ----
 def insertDoctorAvailability(availabilityDetails: dict) -> dict:
     '''
