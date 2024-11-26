@@ -11,14 +11,14 @@ from models import db, User, Doctor,Specialisation , Appointment, Roles, Patient
 def insertUser(userDetails: dict) -> dict:
     '''
     Inserts a user into the database.
-    @param userDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phoneNumber', 'password', 'roleId'
+    @param userDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phone', 'password', 'roleId'
     '''
     passwordHash = userDetails['password']
     newUser = User(
         firstName=userDetails['firstName'],
         lastName=userDetails['lastName'],
         email=userDetails['email'],
-        phone=userDetails['phoneNumber'],
+        phone=userDetails['phone'],
         password=passwordHash,
         roleId=userDetails['roleId']
     )
@@ -38,9 +38,9 @@ def fetchAllUsers():
 def fetchUserByPhoneNumber(userDetails: dict):
     '''
     Fetches a user by their phone number.
-    @param userDetails: dictionary with 'phoneNumber' key
+    @param userDetails: dictionary with 'phone' key
     '''
-    user = User.query.filter_by(phone=userDetails['phoneNumber']).first()
+    user = User.query.filter_by(phone=userDetails['phone']).first()
     if user:
         response = {'firstName': user.firstName, 'lastName': user.lastName, 'email': user.email, 'phone': user.phone}
         return response
@@ -56,6 +56,47 @@ def fetchUserById(userDetails: dict):
         response = {'firstName': user.firstName, 'lastName': user.lastName, 'email': user.email, 'phone': user.phone, 'roleId': user.roleId}
         return response
     return {"error": "User not found"}, 404
+
+from werkzeug.security import check_password_hash
+
+def login(credentials:dict)->dict:
+    '''
+    Validates phone number and password for login.
+
+    Parameters:
+        credentials (dict): A dictionary containing 'phone' and 'password'.
+
+    Returns:
+        dict: A dictionary with 'status' as a boolean and 'log' containing user details if successful.
+    '''
+    phone = credentials.get('phone')
+    password = credentials.get('password')
+
+    # Validate input
+    if not phone or not password:
+        return {'status': False, 'log': 'Phone number and password are required'}
+
+    # Fetch the user by phone number
+    user = User.query.filter_by(phone=phone).first()
+    if not user:
+        return {'status': False, 'log': 'Invalid phone number '}
+
+    # Check if the password matches
+    if user.password != password:
+        return {'status': False, 'log': 'Invalid  password'}
+
+    # If validation succeeds
+    return {
+        'status': True,
+        'log': {
+            'userId': user.userId,
+            'roleId': user.roleId,
+            'firstName': user.firstName,
+            'lastName': user.lastName
+        }
+    }
+
+
 
 # ---- Doctors database logic ----
 def insertDoctor(doctorDetails: dict) -> dict:
@@ -318,3 +359,8 @@ def fetchConfirmedAppointmentsByPatientId(appointmentDetails: dict):
     confirmed_appointments = Appointment.query.filter_by(patient_id=patient_id, confirmation_status='confirmed').all()
     response = [{'appointment_date': appt.appointment_date, 'doctor_id': appt.doctor_id, 'appointment_time': appt.appointment_time} for appt in confirmed_appointments]
     return response
+
+
+if __name__ == "__main__":
+    role = fetchRoleById({'roleId':1})
+    print(role)

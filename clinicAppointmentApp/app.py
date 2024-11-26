@@ -71,6 +71,8 @@ def token_required(roles):
         return decorated_function
     return decorator
 
+class userPhoneNumber(Schema):
+    phone = fields.Str(required=True)
 
 class UserSchema(Schema):
     firstName = fields.Str(required=True)
@@ -103,6 +105,10 @@ class AppointmentSchema(Schema):
     appointment_time = fields.Time(required=True)
     appointment_status = fields.Str(required=True)
     # date = fields.Date(required=True)
+    
+class logInSchema(Schema):
+    phone = fields.Str(required=True)
+    password = fields.Str(required=True)
 
 class RoleSchema(Schema):
     roleName = fields.Str(required=True)
@@ -122,10 +128,20 @@ def validate_request(schema, data):
         return err.messages, 400
     return None
 
+@app.route('/logIn',methods=['POST'])
+def logIn():
+    userDetails = request.json
+    errors = validate_request(logInSchema, userDetails)
+    if errors:
+        return errors
+    from db import login
+    loginResponse = login(userDetails)
+    return loginResponse
+
 @app.route('/createUser', methods=['POST'])
 def createUser():
     userDetails = request.json
-    errors = validate_request(UserSchema, userDetails)
+    errors = validate_request(userPhoneNumber, userDetails)
     if errors:
         return errors
     
@@ -134,7 +150,7 @@ def createUser():
     # print('>>>>>>>>>>>>>>>>',newUser)
     return jsonify(
         {"status":"Success",
-         "userName":f"{newUser.firstName},{newUser.lastName}"}), 201
+         "log":f"user {newUser.firstName},{newUser.lastName} has been created "}), 201
 
 #  "status": "success",
 #             "user": {
