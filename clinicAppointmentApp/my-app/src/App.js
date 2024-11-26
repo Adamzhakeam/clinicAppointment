@@ -1,7 +1,7 @@
 // import logo from "./logo.svg";
 import "./App.css";
 import React from "react";
-// import Login from "./components/Login/Login";
+import Login from "./components/Login/Login";
 import UserDashboard from "./components/UserDashboard/UserDashboard";
 // import UserRegistration from "./components/UserRegistration/UserRegistration";
 // import DoctorRegistration from "./components/DoctorRegistration/DoctorRegistration";
@@ -10,8 +10,8 @@ import UserDashboard from "./components/UserDashboard/UserDashboard";
 function App() {
   return (
     <div className="App">
-      {/* <Login /> */}
-      <UserDashboard/>
+      <Login />
+      {/* <UserDashboard/> */}
       {/* <UserRegistration /> */}
       {/* <DoctorRegistration /> */}
       {/* <PatientRegistration /> */}
