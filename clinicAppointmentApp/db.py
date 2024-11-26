@@ -205,6 +205,17 @@ def insertRole(roleDetails: dict) -> dict:
     db.session.add(newRole)
     db.session.commit()
     return newRole
+
+def fetchRoleById(roleDetails:dict):
+    '''
+        this function is responsible for fetching roles by id from the database 
+        @param: 'roleId' is the expected key in the dictionary
+    '''
+    role = Roles.query.filter_by(id=roleDetails['roleId']).first()
+    if role:
+        response = {'role':role.roleName}
+        return response
+    return {"error":"role has not been"}, 404
 # ---- Specialisation database logic ----
 def insertSpecialisation(specialisationDetails: dict) -> dict:
     '''
@@ -235,16 +246,7 @@ def fetchSpecialisationById(specialisationDetails: dict):
         return response
     return {"error": "Specialisation not found"}, 404
 
-def fetchRoleById(roleDetails:dict):
-    '''
-        this function is responsible for fetching roles by id from the database 
-        @param: 'roleId' is the expected key in the dictionary
-    '''
-    role = Roles.query.filter_by(id=roleDetails['roleId']).first()
-    if role:
-        response = {'role':role.roleName}
-        return response
-    return {"error":"role has not been"}, 404
+
 
 # ---- Doctor Availability database logic ----
 def insertDoctorAvailability(availabilityDetails: dict) -> dict:
