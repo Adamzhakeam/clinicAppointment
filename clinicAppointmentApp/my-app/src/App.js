@@ -10,8 +10,8 @@ import UserDashboard from "./components/UserDashboard/UserDashboard";
 function App() {
   return (
     <div className="App">
-      <Login />
-      {/* <UserDashboard/> */}
+      {/* <Login /> */}
+      <UserDashboard/>
       {/* <UserRegistration /> */}
       {/* <DoctorRegistration /> */}
       {/* <PatientRegistration /> */}

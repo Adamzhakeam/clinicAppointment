@@ -22,7 +22,7 @@ const UserDashboard = () => {
 
   const fetchUserProfile = async (token) => {
     try {
-      const response = await axios.post('/userprofile', {}, {
+      const response = await axios.post('http://127.0.0.1:5000/userprofile', {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.status) {
