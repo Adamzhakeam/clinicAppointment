@@ -266,7 +266,9 @@ def createRole():
     
     from db import insertRole  # Lazy import
     newRole = insertRole(roleDetails)
-    return jsonify(newRole), 201
+    return jsonify({
+        'status':True,
+        'data':f'{newRole.roleName}'}), 201
 
 # ---- Specialisation endpoints ----
 @app.route('/createSpecialisation', methods=['POST'])
