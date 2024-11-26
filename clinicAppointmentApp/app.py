@@ -26,24 +26,34 @@ migrate = Migrate(app, db)
 class UserSchema(Schema):
     firstName = fields.Str(required=True)
     lastName = fields.Str(required=True)
-    phoneNumber = fields.Str(required=True)
+    phone = fields.Str(required=True)
     password = fields.Str(required=True)
     email = fields.Email(required=True)
     roleId = fields.Str(required=True)
+    
 class DoctorSchema(Schema):
-    name = fields.Str(required=True)
-    phone_number = fields.Str(required=True)
-    specialization_id = fields.Int(required=True)
-
-class PatientSchema(Schema):
-    name = fields.Str(required=True)
-    phone_number = fields.Str(required=True)
+    firstName = fields.Str(required=True)
+    lastName = fields.Str(required=True)
+    phone = fields.Str(required=True)
+    password = fields.Str(required=True)
     email = fields.Email(required=True)
+    specialisationId = fields.Str(required=True)
+    
+class PatientSchema(Schema):
+    firstName = fields.Str(required=True)
+    lastName = fields.Str(required=True)
+    phone = fields.Str(required=True)
+    password = fields.Str(required=True)
+    email = fields.Email(required=True)
+    password = fields.Str(required=True)
 
 class AppointmentSchema(Schema):
     doctor_id = fields.Int(required=True)
     patient_id = fields.Int(required=True)
-    date = fields.Date(required=True)
+    appointment_date = fields.Date(required=True)
+    appointment_time = fields.Time(required=True)
+    appointment_status = fields.Str(required=True)
+    # date = fields.Date(required=True)
 
 class RoleSchema(Schema):
     role_name = fields.Str(required=True)
