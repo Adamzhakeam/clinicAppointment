@@ -33,7 +33,7 @@ window.onload = async () => {
   
         // Display the greeting message and user details
         document.getElementById("greeting").textContent = `${greetingMessage}, ${data.userName}`;
-        document.getElementById("userInfo").textContent = `Role: ${data.roleName}`;
+        document.getElementById("userInfo").textContent = `Role: ${data.role}`;
       } else {
         alert("Error fetching user profile.");
       }

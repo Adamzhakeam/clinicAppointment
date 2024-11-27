@@ -53,7 +53,7 @@ def token_required(roles):
                 roleFetchResult = fetchRoleById({'roleId':data['role_id']})
                 
                 if roleFetchResult['status']:
-                    if roleFetchResult['log'][0]['role'] not in roles:
+                    if roleFetchResult['log'] not in roles:
                         return jsonify({'status': False, 'log': 'Permission denied'}), 403
                 else:
                     return jsonify({'status': False, 'log': 'Permission denied'}), 403
@@ -140,7 +140,7 @@ def logIn():
     if user['status']:
         user_id = user['log']['userId']
         role_id = user['log']['roleId']
-        user_name = f"{user['log']['firstName'],user['log']['lastName']}"
+        user_name = user['log']['firstName']
         token = generate_token(user_id, role_id, user_name, app.config['SECRET_KEY'])
         return jsonify({'status':True,'token':token})
         
@@ -153,12 +153,21 @@ def userProfile():
     roleId = request.user['role_id']
     from db import fetchRoleById
     role = fetchRoleById({'roleId':roleId})
-    print('>>>>>>>',userName)
-    return jsonify({'status':True, 'userName':userName})
+    print('>>>>>>>',userName,role['log'])
+    return jsonify({'status':True, "userName":userName,"role":role['log']})
+
+
+@app.route('/test',methods=['POST'])
+def test():
+    from db import fetchRoleById
+    role = fetchRoleById({"roleId":1})
+    return jsonify(role)
+
 @app.route('/createUser', methods=['POST'])
+@token_required(['admin'])
 def createUser():
     userDetails = request.json
-    errors = validate_request(userPhoneNumber, userDetails)
+    errors = validate_request(UserSchema, userDetails)
     if errors:
         return errors
     
@@ -301,7 +310,7 @@ def createRole():
     newRole = insertRole(roleDetails)
     return jsonify({
         'status':True,
-        'data':f'{newRole.roleName}'}), 201
+        'data':f'{newRole.id}'}), 201
 
 # ---- Specialisation endpoints ----
 @app.route('/createSpecialisation', methods=['POST'])

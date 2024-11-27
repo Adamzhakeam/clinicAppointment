@@ -254,9 +254,9 @@ def fetchRoleById(roleDetails:dict):
     '''
     role = Roles.query.filter_by(id=roleDetails['roleId']).first()
     if role:
-        response = {'role':role.roleName}
+        response = {'status':True,'log':role.roleName}
         return response
-    return {"error":"role has not been"}, 404
+    return {'status':False,"log":"role has not been"}, 404
 # ---- Specialisation database logic ----
 def insertSpecialisation(specialisationDetails: dict) -> dict:
     '''
