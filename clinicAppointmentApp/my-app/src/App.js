@@ -1,37 +1,27 @@
-// import logo from "./logo.svg";
-import "./App.css";
 import React from "react";
+// import NavBar from "./components/NavBar/NavBar";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import NavBar from "./components/NavBar/NavBar"; // Navigation Bar
 import Login from "./components/Login/Login";
 import UserDashboard from "./components/UserDashboard/UserDashboard";
-// import UserRegistration from "./components/UserRegistration/UserRegistration";
-// import DoctorRegistration from "./components/DoctorRegistration/DoctorRegistration";
-// import PatientRegistration from "./components/PatientRegistration/PatientRegistration";
+import UserRegistration from "./components/UserRegistration/UserRegistration";
+import DoctorRegistration from "./components/DoctorRegistration/DoctorRegistration";
+import PatientRegistration from "./components/PatientRegistration/PatientRegistration";
 
 function App() {
   return (
-    <div className="App">
-      {/* <Login /> */}
-      <UserDashboard/>
-      {/* <UserRegistration /> */}
-      {/* <DoctorRegistration /> */}
-      {/* <PatientRegistration /> */}
-    </div>
-    //   <div className="App">
-    //     <header className="App-header">
-    //       <img src={logo} className="App-logo" alt="logo" />
-    //       <p>
-    //         Edit <code>src/App.js</code> and save to reload.
-    //       </p>
-    //       <a
-    //         className="App-link"
-    //         href="https://reactjs.org"
-    //         target="_blank"
-    //         rel="noopener noreferrer"
-    //       >
-    //         Learn React
-    //       </a>
-    //     </header>
-    //   </div>
+    <Router>
+      <div className="App">
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/register-user" element={<UserRegistration />} />
+          <Route path="/register-doctor" element={<DoctorRegistration />} />
+          <Route path="/register-patient" element={<PatientRegistration />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

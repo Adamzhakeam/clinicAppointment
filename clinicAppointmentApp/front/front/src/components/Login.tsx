@@ -1,31 +1,26 @@
+// src/components/Login.tsx
 import React, { useState } from 'react';
 import { Button, Form, Container, Row, Col, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  // State to store phone number and password
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
 
-  const navigate = useNavigate(); // Use react-router's navigate to handle navigation
+  const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation check (You can add more sophisticated checks here)
     if (!phoneNumber || !password) {
       setError('Please fill in all fields.');
       return;
     }
 
-    // Proceed with login (You can replace this with an actual API call)
     console.log('Login attempt:', { phoneNumber, password });
-
-    // Assuming login is successful, redirect to the dashboard
-    localStorage.setItem('authToken', 'some-auth-token'); // Storing a dummy auth token
-    navigate('/dashboard'); // Redirect to dashboard
+    localStorage.setItem('authToken', 'some-auth-token');
+    navigate('/dashboard');
   };
 
   return (

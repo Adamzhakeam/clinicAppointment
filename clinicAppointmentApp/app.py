@@ -153,7 +153,7 @@ def userProfile():
     roleId = request.user['role_id']
     from db import fetchRoleById
     role = fetchRoleById({'roleId':roleId})
-    
+    print('>>>>>>>',userName)
     return jsonify({'status':True, 'userName':userName})
 @app.route('/createUser', methods=['POST'])
 def createUser():

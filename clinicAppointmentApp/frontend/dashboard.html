@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>Admin Dashboard</h2>
+    </div>
+    <ul>
+      <li><a href="#" id="addUser">Add User</a></li>
+      <li><a href="#" id="addPatient">Add Patient</a></li>
+      <li><a href="#" id="addDoctor">Add Doctor</a></li>
+      <li><a href="#" id="addSpecialisation">Add Specialisation</a></li>
+      <li><a href="#" id="addRole">Add Role</a></li>
+    </ul>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="greeting" id="greeting"></div>
+    <div class="user-info" id="userInfo"></div>
+
+    <!-- Cards -->
+    <div class="cards">
+      <div class="card">
+        <h3>Confirmed Appointments</h3>
+        <p id="confirmedAppointments">0</p>
+      </div>
+      <div class="card">
+        <h3>Pending Appointments</h3>
+        <p id="pendingAppointments">0</p>
+      </div>
+      <div class="card">
+        <h3>Cancelled Appointments</h3>
+        <p id="cancelledAppointments">0</p>
+      </div>
+      <div class="card">
+        <h3>Appointments</h3>
+        <p id="appointments">0</p>
+      </div>
+      <div class="card">
+        <h3>Patients</h3>
+        <p id="patients">0</p>
+      </div>
+      <div class="card">
+        <h3>Doctors</h3>
+        <p id="doctors">0</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
