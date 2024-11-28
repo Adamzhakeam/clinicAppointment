@@ -35,7 +35,7 @@ class Patient(db.Model):
     phone = db.Column(db.String(15), nullable=False)
     password = db.Column(db.String(200), nullable=False)
     description = db.Column(db.String(255))  # Added description column
-    role = db.Column(db.String(50), nullable=False, default='patient')
+    role = db.Column(db.String(50), nullable=False, default='6')
 
 class Appointment(db.Model):
     __tablename__ = 'appointments'

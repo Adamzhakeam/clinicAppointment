@@ -19,7 +19,7 @@
   }
   
   .container {
-    max-width: 500px;
+    max-width: 600px;
     margin: 50px auto;
     background: var(--text-color);
     padding: 20px;
@@ -28,13 +28,38 @@
   }
   
   header {
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
   }
   
-  header h1 {
-    font-size: 24px;
+  .header-content h2 {
     color: var(--primary-color);
+  }
+  
+  .header-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .header-buttons button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .header-buttons button:hover {
+    background-color: darkgreen;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
   }
   
   .form-group {
@@ -79,11 +104,5 @@
   
   #messageBox.success {
     background-color: var(--success-color);
-    color: var(--text-color);
-  }
-  
-  #messageBox.error {
-    background-color: var(--error-color);
-    color: var(--text-color);
-  }
-  
+    color: var(--text-color)
+  }  

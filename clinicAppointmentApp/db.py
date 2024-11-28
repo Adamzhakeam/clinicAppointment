@@ -96,6 +96,43 @@ def login(credentials:dict)->dict:
         }
     }
 
+def patientLogin(credentials:dict)->dict:
+    '''
+    Validates phone number and password for login.
+
+    Parameters:
+        credentials (dict): A dictionary containing 'phone' and 'password'.
+
+    Returns:
+        dict: A dictionary with 'status' as a boolean and 'log' containing user details if successful.
+    '''
+    phone = credentials.get('phone')
+    password = credentials.get('password')
+
+    # Validate input
+    if not phone or not password:
+        return {'status': False, 'log': 'Phone number and password are required'}
+
+    # Fetch the user by phone number
+    user = Patient.query.filter_by(phone=phone).first()
+    if not user:
+        return {'status': False, 'log': 'Invalid phone number '}
+
+    # Check if the password matches
+    if user.password != password:
+        return {'status': False, 'log': 'Invalid  password'}
+
+    # If validation succeeds
+    return {
+        'status': True,
+        'log': {
+            'userId': user.id,
+            'roleId': user.role,
+            'firstName': user.firstName,
+            'lastName': user.lastName
+        }
+    }
+
 
 
 # ---- Doctors database logic ----

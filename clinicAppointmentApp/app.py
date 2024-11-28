@@ -188,8 +188,25 @@ def logIn():
         
     return user
 
+@app.route('/patientLogin',methods=['POST'])
+def patientLogIn():
+    userDetails = request.json
+    errors = validate_request(logInSchema, userDetails)
+    if errors:
+        return {'status':False,'log':errors}
+    from db import patientLogin
+    user = patientLogin(userDetails)
+    if user['status']:
+        user_id = user['log']['userId']
+        role_id = user['log']['roleId']
+        user_name = user['log']['firstName']
+        token = generate_token(user_id, role_id, user_name, app.config['SECRET_KEY'])
+        return jsonify({'status':True,'token':token})
+        
+    return user
+
 @app.route('/userprofile',methods=['POST'])
-@token_required(['user','admin'])
+@token_required(['user','admin','patient'])
 def userProfile():
     userName = request.user['user_name']
     roleId = request.user['role_id']
@@ -302,11 +319,11 @@ def createPatient():
     patientDetails = request.json
     errors = validate_request(PatientSchema, patientDetails)
     if errors:
-        return errors
+        return {'status':False,'log':errors}
     
     from db import insertPatient  # Lazy import
     newPatient = insertPatient(patientDetails)
-    return jsonify(newPatient), 201
+    return jsonify({'status':True,'log':f"{newPatient.firstName},has been registered successfully"}), 201
 
 @app.route('/fetchAllPatients', methods=['GET'])
 def fetchAllPatients():
