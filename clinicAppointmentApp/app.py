@@ -72,6 +72,48 @@ def token_required(roles):
         return decorated_function
     return decorator
 
+def role_required(allowed_roles:list):
+    from db import fetchRoleById
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            token = request.headers.get('Authorization')
+
+            if not token:
+                return jsonify({'status': False, 'log': 'Token is missing'}), 403
+
+            try:
+                # Extract the token from the 'Bearer' format
+                token = token.split()[1]
+            except IndexError:
+                return jsonify({'status': False, 'log': 'Token format is invalid'}), 403
+
+            try:
+                # Decode the token to get user data
+                data = decode_token(token, app.config['SECRET_KEY'])
+                print("newdecorator>>>>>>>>>>>>>>>>>>>>",data)
+                if not data:
+                    return jsonify({'status': False, 'log': 'Token is invalid or expired'}), 403
+
+                roleFetchResult = fetchRoleById({'roleId':data['role_id']})
+                
+                if roleFetchResult['status']:
+                    if roleFetchResult['log'] not in allowed_roles:
+                        return jsonify({'status': False, 'log': 'Permission denied'}), 403
+                else:
+                    return jsonify({'status': False, 'log': 'Permission denied'}), 403
+            except:
+                return jsonify({'status': False, 'log': 'Invalid token'}), 403
+
+            # Check if the user's role is in the allowed roles
+            # if user_role not in allowed_roles:
+            #     return jsonify({'status': False, 'log': 'Permission denied'}), 403
+
+            return f(*args, **kwargs)
+        
+        return decorated_function
+    return decorator
+
 class userPhoneNumber(Schema):
     phone = fields.Str(required=True)
 
@@ -164,18 +206,18 @@ def test():
     return jsonify(role)
 
 @app.route('/createUser', methods=['POST'])
-@token_required(['admin'])
+@role_required(['admin'])
 def createUser():
     userDetails = request.json
     errors = validate_request(UserSchema, userDetails)
     if errors:
-        return errors
-    
+        return {'status':False,'log':errors
+        }
     from db import insertUser  # Lazy import
     newUser = insertUser(userDetails)
     # print('>>>>>>>>>>>>>>>>',newUser)
     return jsonify(
-        {"status":"Success",
+        {"status":True,
          "log":f"user {newUser.firstName},{newUser.lastName} has been created "}), 201
 
 #  "status": "success",

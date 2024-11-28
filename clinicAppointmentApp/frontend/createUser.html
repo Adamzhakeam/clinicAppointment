@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create User</title>
+  <link rel="stylesheet" href="createUser.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Create User</h1>
+    </header>
+    <form id="createUserForm">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" placeholder="Enter first name" required>
+      </div>
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" placeholder="Enter last name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter email address" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" placeholder="Enter phone number" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" required>
+      </div>
+      <div class="form-group">
+        <label for="roleId">Role ID</label>
+        <input type="number" id="roleId" placeholder="Enter role ID" required>
+      </div>
+      <button type="submit" id="submitBtn">Create User</button>
+    </form>
+    <div id="messageBox"></div>
+  </div>
+  <script src="createUser.js"></script>
+</body>
+</html>
