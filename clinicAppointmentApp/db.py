@@ -139,17 +139,17 @@ def patientLogin(credentials:dict)->dict:
 def insertDoctor(doctorDetails: dict) -> dict:
     '''
     Inserts a doctor into the database.
-    @param doctorDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phone', 'specialization', 'password', 'department_id'
+    @param doctorDetails: dictionary with keys: 'firstName', 'lastName', 'email', 'phone', 'specialization',
     '''
-    passwordHash = doctorDetails['password']
+    # passwordHash = doctorDetails['password']
     newDoctor = Doctor(
         firstName=doctorDetails['firstName'],
         lastName=doctorDetails['lastName'],
         email=doctorDetails['email'],
         phone=doctorDetails['phone'],
-        specialization=doctorDetails['specialization'],
-        password=passwordHash,
-        department_id=doctorDetails['department_id']
+        specializationId=doctorDetails['specializationId'],
+        # password=passwordHash,
+        # department_id=doctorDetails['department_id']
     )
     db.session.add(newDoctor)
     db.session.commit()

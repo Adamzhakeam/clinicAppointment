@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="patientDashboard.css">
+</head>
+<body>
+  <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div class="border-end bg-dark text-white" id="sidebar-wrapper">
+      <div class="sidebar-heading">Patient Dashboard</div>
+      <div class="list-group list-group-flush">
+        <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Home</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Appointments</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Settings</a>
+        <button id="logoutButton" class="btn btn-danger w-100 mt-3">Logout</button>
+      </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <div class="container-fluid">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
+          <h2 id="greeting">Hello, <span id="patientName"></span>!</h2>
+        </div>
+
+        <!-- Cards Section -->
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card text-center">
+              <div class="card-body">
+                <h5 class="card-title">Schedule Appointment</h5>
+                <p class="card-text">View available slots and schedule a new appointment.</p>
+                <a href="#" class="btn btn-primary">Schedule</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card text-center">
+              <div class="card-body">
+                <h5 class="card-title">Cancelled Appointments</h5>
+                <p class="card-text">View your previously cancelled appointments.</p>
+                <a href="#" class="btn btn-warning">View</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card text-center">
+              <div class="card-body">
+                <h5 class="card-title">Confirmed Appointments</h5>
+                <p class="card-text">View and manage your confirmed appointments.</p>
+                <a href="#" class="btn btn-success">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="patientDashboard.js"></script>
+</body>
+</html>

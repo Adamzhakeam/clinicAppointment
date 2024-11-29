@@ -129,9 +129,9 @@ class DoctorSchema(Schema):
     firstName = fields.Str(required=True)
     lastName = fields.Str(required=True)
     phone = fields.Str(required=True)
-    password = fields.Str(required=True)
+    # password = fields.Str(required=True)
     email = fields.Email(required=True)
-    specialisationId = fields.Str(required=True)
+    specializationId = fields.Int(required=True)
     
 class PatientSchema(Schema):
     firstName = fields.Str(required=True)
@@ -275,17 +275,23 @@ def fetchUserById():
 
 # ---- Doctors endpoints ----
 @app.route('/createDoctor', methods=['POST'])
+# @role_required(['admin'])
 def createDoctor():
     doctorDetails = request.json
     errors = validate_request(DoctorSchema, doctorDetails)
     if errors:
-        return errors
+        return {
+            'status':False,
+            'log':errors
+        }
     
     from db import insertDoctor  # Lazy import
     newDoctor = insertDoctor(doctorDetails)
-    return jsonify(newDoctor), 201
+    return jsonify({
+        'status':True,
+        'log':f"{newDoctor.firstName} has been created"}), 201
 
-@app.route('/fetchAllDoctors', methods=['GET'])
+@app.route('/fetchAllDoctors', methods=['POST'])
 def fetchAllDoctors():
     from db import fetchAllDoctors  # Lazy import
     doctors = fetchAllDoctors()
