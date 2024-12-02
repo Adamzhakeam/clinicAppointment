@@ -331,7 +331,7 @@ def createPatient():
     newPatient = insertPatient(patientDetails)
     return jsonify({'status':True,'log':f"{newPatient.firstName},has been registered successfully"}), 201
 
-@app.route('/fetchAllPatients', methods=['GET'])
+@app.route('/fetchAllPatients', methods=['POST'])
 def fetchAllPatients():
     from db import fetchAllPatients  # Lazy import
     patients = fetchAllPatients()
