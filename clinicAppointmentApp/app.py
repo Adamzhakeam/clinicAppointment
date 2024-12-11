@@ -147,6 +147,7 @@ class AppointmentSchema(Schema):
     appointment_date = fields.Date(required=True)
     appointment_time = fields.Time(required=True)
     appointment_status = fields.Str(required=True)
+    description = fields.Str(required=True)
     # date = fields.Date(required=True)
     
 class logInSchema(Schema):
@@ -157,7 +158,7 @@ class RoleSchema(Schema):
     roleName = fields.Str(required=True)
 
 class SpecialisationSchema(Schema):
-    specialization_name = fields.Str(required=True)
+    specializationName = fields.Str(required=True)
 
 class DoctorAvailabilitySchema(Schema):
     doctor_id = fields.Int(required=True)
@@ -218,8 +219,9 @@ def userProfile():
 
 @app.route('/test',methods=['POST'])
 def test():
-    from db import fetchRoleById
-    role = fetchRoleById({"roleId":1})
+    from db import checkAppointmentWithin35Minutes
+    role = checkAppointmentWithin35Minutes("1",'2024-07-02 00:00:00.000000',"16:22:00")
+    print('>>>>>>>>>>>>>>>>>>>>>',role)
     return jsonify(role)
 
 @app.route('/createUser', methods=['POST'])
@@ -237,11 +239,6 @@ def createUser():
         {"status":True,
          "log":f"user {newUser.firstName},{newUser.lastName} has been created "}), 201
 
-#  "status": "success",
-#             "user": {
-#                 "username": new_user.username,
-#                 "email": new_user.email
-#             }
 
 
 @app.route('/fetchAllUsers', methods=['POST'])
@@ -295,7 +292,11 @@ def createDoctor():
 def fetchAllDoctors():
     from db import fetchAllDoctors  # Lazy import
     doctors = fetchAllDoctors()
-    return jsonify(doctors), 200
+    if not len(doctors):
+        return {'status':False,'log':'no doctors registered as yet'}
+    print('>>>>>>>>>>',doctors)
+     
+    return jsonify({'status':True,'log':'','data':doctors}), 200
 
 @app.route('/fetchDoctorByPhoneNumber', methods=['POST'])
 def fetchDoctorByPhoneNumber():
@@ -343,10 +344,13 @@ def createAppointment():
     appointmentDetails = request.json
     errors = validate_request(AppointmentSchema, appointmentDetails)
     if errors:
-        return errors
+        return {'status':False,
+                'log':errors}
     
     from db import insertAppointment  # Lazy import
     newAppointment = insertAppointment(appointmentDetails)
+    if not newAppointment['status']:
+        return newAppointment
     return jsonify(newAppointment), 201
 
 @app.route('/fetchAppointmentsByDoctorIdAndStatus', methods=['POST'])
@@ -379,17 +383,24 @@ def createRole():
 
 # ---- Specialisation endpoints ----
 @app.route('/createSpecialisation', methods=['POST'])
+@role_required(['admin'])
 def createSpecialisation():
     specialisationDetails = request.json
     errors = validate_request(SpecialisationSchema, specialisationDetails)
     if errors:
-        return errors
+        return {
+            'status':False,
+            'log':errors
+        }
     
     from db import insertSpecialisation  # Lazy import
     newSpecialisation = insertSpecialisation(specialisationDetails)
-    return jsonify(newSpecialisation), 201
+    print('>>>>>>>>>>>>>>>>>',newSpecialisation.specializationName)
+    return jsonify({
+        'status':True,
+        'log':f"specialisation {newSpecialisation.specializationName} has been created"}), 201
 
-@app.route('/fetchAllSpecialisations', methods=['GET'])
+@app.route('/fetchAllSpecialisations', methods=['POST'])
 def fetchAllSpecialisations():
     from db import fetchAllSpecialisations  # Lazy import
     specialisations = fetchAllSpecialisations()

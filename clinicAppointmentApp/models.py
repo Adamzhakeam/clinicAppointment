@@ -25,7 +25,6 @@ class Doctor(db.Model):
     specializationId = db.Column(db.Integer, db.ForeignKey('specialisations.id'), nullable=False)  # Corrected Foreign Key
     
     specialization = db.relationship('Specialisation', back_populates='doctors')  # Corrected relationship
-
 class Patient(db.Model):
     __tablename__ = 'patients'
     id = db.Column(db.Integer, primary_key=True)
@@ -42,9 +41,10 @@ class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
-    appointment_date = db.Column(db.DateTime, nullable=False)
+    appointment_date = db.Column(db.String, nullable=False)
     appointment_time = db.Column(db.String(10), nullable=False)
     appointment_status = db.Column(db.String(10), nullable=False)
+    description = db.Column(db.String(500), nullable=False)
 
     doctor = db.relationship('Doctor', backref='appointments')
     patient = db.relationship('Patient', backref='appointments')

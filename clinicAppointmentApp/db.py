@@ -3,7 +3,7 @@
     the application for example all the logic for inserting,updating,altering,
     deleting to the database 
 '''
-
+from datetime import datetime,timedelta
 # import kisa_utils as kutils
 from models import db, User, Doctor,Specialisation , Appointment, Roles, Patient,DoctorAvailability
 
@@ -160,8 +160,85 @@ def fetchAllDoctors():
     Fetches all doctors from the database.
     '''
     doctors = Doctor.query.all()
-    response = [{'firstName': doctor.firstName, 'lastName': doctor.lastName, "email": doctor.email, "phone": doctor.phone, "specialization": doctor.specialization} for doctor in doctors]
+    # response = [{'firstName': doctor.firstName, 'lastName': doctor.lastName, "email": doctor.email, "phone": doctor.phone, "specialization": doctor.specialization} for doctor in doctors]
+    response = []
+    for doctor in doctors:
+        response.append({
+            'firstName': doctor.firstName,
+            'lastName': doctor.lastName,
+            'email': doctor.email,
+            'phone': doctor.phone,
+            'specialization': doctor.specialization
+        })
     return response
+
+def fetchDoctorFromAppointments(doctorId:str,appointmentDate:str,appointmentTime:str):
+    # appointmentDatez=datetime.strptime(appointmentDate, '%Y-%m-%d').date()
+    print(doctorId,appointmentDate,appointmentTime)
+    doctor = Appointment.query.filter_by(doctor_id=doctorId, appointment_date = appointmentDate, appointment_time = appointmentTime).all()
+    print('>>>>',doctor)
+    
+    #  apptTime = checkAppointmentWithin35Minutes(doctorId,appointmentDate,appointmentTime)
+    #     if apptTime['status']:
+    #         return apptTime
+    #     return apptTime
+    if not doctor:
+        return {'status':True, 'log':'no  schedule'}
+       
+    return {'status':False,'log':'there an appointment scheduled in the timeframe'}
+    
+def checkAppointmentWithin35Minutes(doctorId: str,patientId:str, appointmentDate: str, appointmentTime: str) -> dict:
+    """
+    Checks if there is already an appointment within 35 minutes of the provided appointment time.
+
+    :param doctorId: ID of the doctor
+    :param appointmentDate: Date of the appointment in string format
+    :param appointmentTime: Time of the appointment in string format (HH:MM:SS)
+    :return: Dictionary with status and log
+    """
+    # Fetch all appointments for the doctor on the given date
+    
+
+    existing_appointments = Appointment.query.filter_by(
+        doctor_id=doctorId, appointment_date=appointmentDate
+    ).all()
+    print(doctorId,appointmentDate,appointmentTime)
+    # If no appointments exist, return no conflict
+    if  not existing_appointments:
+        existingPatientAppointment = Appointment.query.filter_by(
+            patient_Id = patientId, appointment_date=appointmentDate
+        ).all
+        if not existingPatientAppointment:
+            return {'status': False, 'log': 'No conflicting appointments'}
+
+    # Convert the provided time to minutes since midnight for comparison
+    new_appointment_minutes = sum(
+        int(x) * y for x, y in zip(appointmentTime.split(":"), [60, 1, 0])
+    )
+
+    for appointment in existing_appointments:
+        # Extract the time of the existing appointment
+        existing_time = appointment.appointment_time
+        existing_appointment_minutes = sum(
+            int(x) * y for x, y in zip(existing_time.split(":"), [60, 1, 0])
+        )
+
+        # Check if the time difference is within 35 minutes
+        if abs(new_appointment_minutes - existing_appointment_minutes) <= 35:
+            
+            return {'status': True, 'log': 'Conflicting appointment within 35 minutes'}
+
+    # If no conflict is found, return no conflict
+    return {'status': False, 'log': 'No conflicting appointments'}
+
+
+def fetchDoctorFromAppointment(doctorId:str,appointmentDate:str):
+    # appointmentDatez=datetime.strptime(appointmentDate, '%Y-%m-%d').date()
+    # print(appointmentDatez)
+    doctor = Appointment.query.filter_by(doctor_id=doctorId, appointment_date = appointmentDate).all()
+    if not doctor:
+        return {'status':False, 'log':'no  schedule'}
+    return doctor
 
 def fetchDoctorByPhoneNumber(doctorDetails: dict):
     '''
@@ -245,18 +322,31 @@ def fetchAllPatients():
 def insertAppointment(appointmentDetails: dict) -> dict:
     '''
     Inserts an appointment into the database.
-    @param appointmentDetails: dictionary with keys: 'doctor_id', 'patient_id', 'appointment_date', 'appointment_time', 'appointment_status'
+    @param appointmentDetails: dictionary with keys: 'doctor_id', 'patient_id', 'appointment_date', 'appointment_time', 'appointment_status',
+    'description'
     '''
-    newAppointment = Appointment(
-        doctor_id=appointmentDetails['doctor_id'],
-        patient_id=appointmentDetails['patient_id'],
-        appointment_date=appointmentDetails['appointment_date'],
-        appointment_time=appointmentDetails['appointment_time'],
-        appointment_status=appointmentDetails['appointment_status']
-    )
-    db.session.add(newAppointment)
-    db.session.commit()
-    return newAppointment
+    appointment_date = datetime.strptime(appointmentDetails['appointment_date'], '%Y-%m-%d').date()
+    appointment_time = datetime.strptime(appointmentDetails['appointment_time'], '%H:%M:%S').time()
+    
+    print('appointment date>>>>> ',appointment_date)
+    doctorScheduleStatus = checkAppointmentWithin35Minutes(appointmentDetails['doctor_id'],appointment_date,appointment_time.strftime('%H:%M:%S'))
+    print('>>>>>>>>>>',appointment_date,appointment_time.strftime('%H:%M:%S'))
+    if  not doctorScheduleStatus['status']:
+    
+        newAppointment = Appointment(
+            doctor_id=appointmentDetails['doctor_id'],
+            patient_id=appointmentDetails['patient_id'],
+            appointment_date=appointment_date,
+            appointment_time=appointment_time.strftime('%H:%M:%S'),
+            appointment_status=appointmentDetails['appointment_status'],
+            description = appointmentDetails['description']
+        )
+        db.session.add(newAppointment)
+        db.session.commit()
+        return {'status':True,'log':f"appointment has been scheduled at {newAppointment.appointment_time} on {newAppointment.appointment_date}"}
+    return doctorScheduleStatus
+
+
 
 def fetchAppointmentsByDoctorIdAndStatus(appointmentDetails: dict):
     '''
@@ -294,13 +384,14 @@ def fetchRoleById(roleDetails:dict):
         response = {'status':True,'log':role.roleName}
         return response
     return {'status':False,"log":"role has not been"}, 404
+
 # ---- Specialisation database logic ----
 def insertSpecialisation(specialisationDetails: dict) -> dict:
     '''
     Inserts a specialisation into the database.
-    @param specialisationDetails: dictionary with 'name' key
+    @param specialisationDetails: dictionary with 'specializationName' key
     '''
-    newSpecialisation = Specialisation(name=specialisationDetails['name'])
+    newSpecialisation = Specialisation(specializationName=specialisationDetails['specializationName'])
     db.session.add(newSpecialisation)
     db.session.commit()
     return newSpecialisation
