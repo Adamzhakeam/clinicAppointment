@@ -57,7 +57,7 @@ def fetchUserById(userDetails: dict):
         return response
     return {"error": "User not found"}, 404
 
-from werkzeug.security import check_password_hash
+# from werkzeug.security import check_password_hash
 
 def login(credentials:dict)->dict:
     '''
@@ -160,16 +160,17 @@ def fetchAllDoctors():
     Fetches all doctors from the database.
     '''
     doctors = Doctor.query.all()
-    # response = [{'firstName': doctor.firstName, 'lastName': doctor.lastName, "email": doctor.email, "phone": doctor.phone, "specialization": doctor.specialization} for doctor in doctors]
-    response = []
-    for doctor in doctors:
-        response.append({
-            'firstName': doctor.firstName,
-            'lastName': doctor.lastName,
-            'email': doctor.email,
-            'phone': doctor.phone,
-            'specialization': doctor.specialization
-        })
+    response = [{'doctorId':doctor.id,'firstName': doctor.firstName, 'lastName': doctor.lastName, "email": doctor.email, "phone": doctor.phone, "specialization": doctor.specializationId} for doctor in doctors]
+    # response = []
+    # for doctor in doctors:
+    #     response.append({
+    #         'firstName': doctor.firstName,
+    #         'lastName': doctor.lastName,
+    #         'email': doctor.email,
+    #         'phone': doctor.phone,
+    #         'specialization': doctor.specializationId,
+    #         'doctorId':doctor.id
+    #     })
     return response
 
 def fetchDoctorFromAppointments(doctorId:str,appointmentDate:str,appointmentTime:str):
@@ -206,7 +207,7 @@ def checkAppointmentWithin35Minutes(doctorId: str,patientId:str, appointmentDate
     # If no appointments exist, return no conflict
     if  not existing_appointments:
         existingPatientAppointment = Appointment.query.filter_by(
-            patient_Id = patientId, appointment_date=appointmentDate
+            patient_id = patientId, appointment_date=appointmentDate
         ).all
         if not existingPatientAppointment:
             return {'status': False, 'log': 'No conflicting appointments'}
@@ -285,38 +286,9 @@ def fetchAllPatients():
     Fetches all patients from the database.
     '''
     patients = Patient.query.all()
-    response = [{'firstName': patient.firstName, 'lastName': patient.lastName, "email": patient.email, "phone": patient.phone} for patient in patients]
+    response = [{'patientId':patient.id,'firstName': patient.firstName, 'lastName': patient.lastName, "email": patient.email, "phone": patient.phone} for patient in patients]
     return response
 
-# # ---- Departments database logic ----
-# def insertDepartment(departmentDetails: dict) -> dict:
-#     '''
-#     Inserts a department into the database.
-#     @param departmentDetails: dictionary with key 'name'
-#     '''
-#     newDepartment = Department(name=departmentDetails['name'])
-#     db.session.add(newDepartment)
-#     db.session.commit()
-#     return newDepartment
-
-# def fetchAllDepartments():
-#     '''
-#     Fetches all departments from the database.
-#     '''
-#     departments = Department.query.all()
-#     response = [{'departmentName': department.name} for department in departments]
-#     return response
-
-# def fetchDepartmentById(departmentDetails: dict):
-#     '''
-#     Fetches a department by its ID.
-#     @param departmentDetails: dictionary with 'departmentId' key
-#     '''
-#     department = Department.query.filter_by(id=departmentDetails['departmentId']).first()
-#     if department:
-#         response = {'departmentName': department.name, 'departmentId': department.id}
-#         return response
-#     return {"error": "Department not found"}, 404
 
 # ---- Appointments database logic ----
 def insertAppointment(appointmentDetails: dict) -> dict:
@@ -329,7 +301,7 @@ def insertAppointment(appointmentDetails: dict) -> dict:
     appointment_time = datetime.strptime(appointmentDetails['appointment_time'], '%H:%M:%S').time()
     
     print('appointment date>>>>> ',appointment_date)
-    doctorScheduleStatus = checkAppointmentWithin35Minutes(appointmentDetails['doctor_id'],appointment_date,appointment_time.strftime('%H:%M:%S'))
+    doctorScheduleStatus = checkAppointmentWithin35Minutes(appointmentDetails['doctor_id'],appointmentDetails['patient_id'],appointment_date,appointment_time.strftime('%H:%M:%S'))
     print('>>>>>>>>>>',appointment_date,appointment_time.strftime('%H:%M:%S'))
     if  not doctorScheduleStatus['status']:
     
@@ -401,7 +373,7 @@ def fetchAllSpecialisations():
     Fetches all specialisations from the database.
     '''
     specialisations = Specialisation.query.all()
-    response = [{'specialisationName': spec.name} for spec in specialisations]
+    response = [{'specializationId':spec.id,'specializationName': spec.specializationName} for spec in specialisations]
     return response
 
 def fetchSpecialisationById(specialisationDetails: dict):

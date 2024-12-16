@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Appointment</title>
+    <link rel="stylesheet" href="createAppointment.css">
+</head>
+<body>
+    <header>
+        <h1 id="greeting"></h1>
+        <p>Welcome, <span id="patientName"></span></p>
+        <button id="homeBtn">Home</button>
+    </header>
+
+    <main>
+        <h2>Book an Appointment</h2>
+        <form id="appointmentForm">
+            <label for="specialization">Specialization:</label>
+            <select id="specialization" required>
+                <option value="">Select Specialization</option>
+            </select>
+
+            <label for="doctor">Doctor:</label>
+            <select id="doctor" required>
+                <option value="">Select Doctor</option>
+            </select>
+
+            <label for="appointmentDate">Appointment Date:</label>
+            <input type="date" id="appointmentDate" required>
+
+            <label for="appointmentTime">Appointment Time:</label>
+            <input type="time" id="appointmentTime" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" rows="4" placeholder="Brief description of your concern"></textarea>
+
+            <button type="submit">Set Appointment</button>
+        </form>
+    </main>
+
+    <script src="createAppointment.js"></script>
+</body>
+</html>

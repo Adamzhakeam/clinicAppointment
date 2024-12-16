@@ -91,7 +91,7 @@ def role_required(allowed_roles:list):
             try:
                 # Decode the token to get user data
                 data = decode_token(token, app.config['SECRET_KEY'])
-                print("newdecorator>>>>>>>>>>>>>>>>>>>>",data)
+                # print("newdecorator>>>>>>>>>>>>>>>>>>>>",data)
                 if not data:
                     return jsonify({'status': False, 'log': 'Token is invalid or expired'}), 403
 
@@ -211,6 +211,7 @@ def patientLogIn():
 def userProfile():
     userName = request.user['user_name']
     roleId = request.user['role_id']
+    anonymous = request.user['user_id']
     from db import fetchRoleById
     role = fetchRoleById({'roleId':roleId})
     print('>>>>>>>',userName,role['log'])
@@ -296,7 +297,7 @@ def fetchAllDoctors():
         return {'status':False,'log':'no doctors registered as yet'}
     print('>>>>>>>>>>',doctors)
      
-    return jsonify({'status':True,'log':'','data':doctors}), 200
+    return jsonify(doctors), 200
 
 @app.route('/fetchDoctorByPhoneNumber', methods=['POST'])
 def fetchDoctorByPhoneNumber():
@@ -342,15 +343,19 @@ def fetchAllPatients():
 @app.route('/createAppointment', methods=['POST'])
 def createAppointment():
     appointmentDetails = request.json
+    print('payload>>>>>>',appointmentDetails)
     errors = validate_request(AppointmentSchema, appointmentDetails)
     if errors:
+        print('errors',errors)
         return {'status':False,
                 'log':errors}
     
     from db import insertAppointment  # Lazy import
     newAppointment = insertAppointment(appointmentDetails)
     if not newAppointment['status']:
+        print('false',newAppointment)
         return newAppointment
+    print('true',newAppointment)
     return jsonify(newAppointment), 201
 
 @app.route('/fetchAppointmentsByDoctorIdAndStatus', methods=['POST'])
