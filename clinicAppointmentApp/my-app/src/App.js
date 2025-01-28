@@ -15,10 +15,10 @@ function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/register-user" element={<UserRegistration />} />
-          <Route path="/register-doctor" element={<DoctorRegistration />} />
-          <Route path="/register-patient" element={<PatientRegistration />} />
+          {/* <Route path="/dashboard" element={<UserDashboard />} /> */}
+          {/* <Route path="/register-user" element={<UserRegistration />} /> */}
+          {/* <Route path="/register-doctor" element={<DoctorRegistration />} /> */}
+          {/* <Route path="/register-patient" element={<PatientRegistration />} /> */}
         </Routes>
       </div>
     </Router>
