@@ -188,49 +188,55 @@ def fetchDoctorFromAppointments(doctorId:str,appointmentDate:str,appointmentTime
        
     return {'status':False,'log':'there an appointment scheduled in the timeframe'}
     
-def checkAppointmentWithin35Minutes(doctorId: str,patientId:str, appointmentDate: str, appointmentTime: str) -> dict:
+
+def checkAppointmentWithin35Minutes(doctorId: str, patientId: str, appointmentDate: str, appointmentTime: str) -> dict:
     """
-    Checks if there is already an appointment within 35 minutes of the provided appointment time.
+    Checks if there is already an appointment within 35 minutes of the provided appointment time
+    for either the doctor or the patient.
 
     :param doctorId: ID of the doctor
-    :param appointmentDate: Date of the appointment in string format
+    :param patientId: ID of the patient
+    :param appointmentDate: Date of the appointment in string format (YYYY-MM-DD)
     :param appointmentTime: Time of the appointment in string format (HH:MM:SS)
     :return: Dictionary with status and log
     """
-    # Fetch all appointments for the doctor on the given date
-    
+    # Convert appointmentDate and appointmentTime to a datetime object
+    new_appointment_datetime = datetime.strptime(f"{appointmentDate} {appointmentTime}", "%Y-%m-%d %H:%M:%S")
 
-    existing_appointments = Appointment.query.filter_by(
+    # Fetch all appointments for the doctor and patient on the given date
+    doctor_appointments = Appointment.query.filter_by(
         doctor_id=doctorId, appointment_date=appointmentDate
     ).all()
-    print(doctorId,appointmentDate,appointmentTime)
-    # If no appointments exist, return no conflict
-    if  not existing_appointments:
-        existingPatientAppointment = Appointment.query.filter_by(
-            patient_id = patientId, appointment_date=appointmentDate
-        ).all
-        if not existingPatientAppointment:
-            return {'status': False, 'log': 'No conflicting appointments'}
 
-    # Convert the provided time to minutes since midnight for comparison
-    new_appointment_minutes = sum(
-        int(x) * y for x, y in zip(appointmentTime.split(":"), [60, 1, 0])
-    )
+    patient_appointments = Appointment.query.filter_by(
+        patient_id=patientId, appointment_date=appointmentDate
+    ).all()
 
-    for appointment in existing_appointments:
-        # Extract the time of the existing appointment
-        existing_time = appointment.appointment_time
-        existing_appointment_minutes = sum(
-            int(x) * y for x, y in zip(existing_time.split(":"), [60, 1, 0])
+    # Check conflicts for the doctor
+    for appointment in doctor_appointments:
+        existing_datetime = datetime.strptime(
+            f"{appointment.appointment_date} {appointment.appointment_time}",
+            "%Y-%m-%d %H:%M:%S"
         )
-
         # Check if the time difference is within 35 minutes
-        if abs(new_appointment_minutes - existing_appointment_minutes) <= 35:
-            
-            return {'status': True, 'log': 'Conflicting appointment within 35 minutes'}
+        if abs((new_appointment_datetime - existing_datetime).total_seconds()) <= 35 * 60:
+            return {'status': True, 'log': 'Doctor has a conflicting appointment within 35 minutes'}
 
-    # If no conflict is found, return no conflict
+    # Check conflicts for the patient
+    for appointment in patient_appointments:
+        existing_datetime = datetime.strptime(
+            f"{appointment.appointment_date} {appointment.appointment_time}",
+            "%Y-%m-%d %H:%M:%S"
+        )
+        # Check if the time difference is within 35 minutes
+        if abs((new_appointment_datetime - existing_datetime).total_seconds()) <= 35 * 60:
+            return {'status': True, 'log': 'Patient has a conflicting appointment within 35 minutes'}
+
+    # If no conflicts are found
     return {'status': False, 'log': 'No conflicting appointments'}
+
+
+
 
 
 def fetchDoctorFromAppointment(doctorId:str,appointmentDate:str):
@@ -318,7 +324,13 @@ def insertAppointment(appointmentDetails: dict) -> dict:
         return {'status':True,'log':f"appointment has been scheduled at {newAppointment.appointment_time} on {newAppointment.appointment_date}"}
     return doctorScheduleStatus
 
-
+# def confirmPendingAppointments(patientId,appointmentTime,appointmentDate):
+#     '''
+#     this module is responsible for confirming pending appointments 
+#     '''
+#     status = 'pending'
+#     appointments = Appointment.query.filter_By(patient_id=patientId,appointment_date=appointmentDate,
+#                                                appointment_time=appointmentTime,appointment_status=status).all
 
 def fetchAppointmentsByDoctorIdAndStatus(appointmentDetails: dict):
     '''
@@ -427,18 +439,38 @@ def fetchDoctorAvailabilityByDate(availabilityDetails: dict):
     return response
 
 # ---- Appointment Confirmation database logic ----
+# def confirmAppointment(appointmentDetails: dict) -> dict:
+#     '''
+#     Confirms an appointment in the database.
+#     @param appointmentDetails: dictionary with 'appointmentId' and 'confirmationStatus' keys
+#     '''
+#     appointment = Appointment.query.filter_by(id=appointmentDetails['appointmentId']).first()
+#     if not appointment:
+#         return {"error": "Appointment not found"}, 404
+    
+#     appointment.confirmation_status = appointmentDetails['confirmationStatus']
+#     db.session.commit()
+    # return appointment
 def confirmAppointment(appointmentDetails: dict) -> dict:
-    '''
+    """
     Confirms an appointment in the database.
     @param appointmentDetails: dictionary with 'appointmentId' and 'confirmationStatus' keys
-    '''
+    """
+    # Fetch the appointment from the database
     appointment = Appointment.query.filter_by(id=appointmentDetails['appointmentId']).first()
     if not appointment:
         return {"error": "Appointment not found"}, 404
-    
+
+    # Update the confirmation status
     appointment.confirmation_status = appointmentDetails['confirmationStatus']
     db.session.commit()
-    return appointment
+
+    return {
+        "message": "Appointment confirmed successfully",
+        "appointmentId": appointment.id,
+        "confirmationStatus": appointment.confirmation_status
+    }, 200
+
 
 def fetchConfirmedAppointmentsByDoctorId(appointmentDetails: dict):
     '''

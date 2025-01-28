@@ -2,7 +2,7 @@
     this module is responsible for 
 '''
 
-from marshmallow import Schema, fields, ValidationError
+from marshmallow import Schema, fields, ValidationError, validates
 from flask import Flask,request,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -163,6 +163,19 @@ class SpecialisationSchema(Schema):
 class DoctorAvailabilitySchema(Schema):
     doctor_id = fields.Int(required=True)
     availability_date = fields.Date(required=True)
+    
+
+
+class AppointmentConfirmationSchema(Schema):
+    appointmentId = fields.Int(required=True, error_messages={"required": "Appointment ID is required."})
+    confirmationStatus = fields.Str(required=True, error_messages={"required": "Confirmation status is required."})
+
+    @validates('confirmationStatus')
+    def validate_confirmation_status(self, value):
+        allowed_statuses = ["confirmed"]
+        if value not in allowed_statuses:
+            raise ValidationError(f"Invalid confirmation status. Allowed values: {allowed_statuses}.")
+
 
 # Utility function for validation
 def validate_request(schema, data):
@@ -371,6 +384,23 @@ def fetchAppointmentsByDoctorIdAndStatus():
     from db import fetchAppointmentsByDoctorIdAndStatus  # Lazy import
     appointments = fetchAppointmentsByDoctorIdAndStatus(appointmentDetails)
     return jsonify(appointments), 200
+
+@app.route('/confirmAppointment', methods=['POST'])
+def confirm_appointment_endpoint():
+    from db import confirmAppointment
+    schema = AppointmentConfirmationSchema()
+    try:
+        # Validate input JSON against the schema
+        appointment_details = schema.load(request.json)
+    except ValidationError as err:
+        # Return validation errors in a clean format
+        return jsonify({"errors": err.messages}), 400
+
+    # Call the confirmAppointment function
+    result, status_code = confirmAppointment(appointment_details)
+    print(result)
+    return jsonify(result), status_code
+
 
 # ---- Roles endpoints ----
 @app.route('/createRole', methods=['POST'])
