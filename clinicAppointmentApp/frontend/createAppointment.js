@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Declare `anonymous` globally to access it across functions
     let anonymous;
 
     const patientNameElement = document.getElementById('patientName');
@@ -28,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = await response.json();
         if (data.status) {
             const userName = data.userName;
-            anonymous = data.anonymous; // Store patient ID globally
+            anonymous = data.userId; // Store patient ID globally
             console.log("Fetched patient ID (anonymous):", anonymous);
 
             patientNameElement.textContent = userName;
@@ -97,6 +96,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Capture and format appointment time
+    const appointmentTimeInput = document.getElementById('appointmentTime');
+    appointmentTimeInput.addEventListener('change', () => {
+        if (appointmentTimeInput.value) {
+            appointmentTimeInput.dataset.formattedTime = appointmentTimeInput.value + ":00"; // Append seconds
+        }
+    });
+
     // Submit appointment form
     appointmentForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -106,11 +113,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        const formattedTime = appointmentTimeInput.dataset.formattedTime || (appointmentTimeInput.value ? appointmentTimeInput.value + ":00" : "");
+
         const formData = {
             doctor_id: doctorSelect.value,
-            patient_id: anonymous, // Include patient ID here
+            patient_id: anonymous,
             appointment_date: document.getElementById('appointmentDate').value,
-            appointment_time: document.getElementById('appointmentTime').value,
+            appointment_time: formattedTime, // Ensure HH:MM:SS format
             appointment_status: "Pending",
             description: document.getElementById('description').value,
         };
@@ -128,13 +137,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             const data = await response.json();
-            if (response.ok) {
-                alert(data.log || "Appointment successfully created!");
-            } else {
-                alert(data.error || "Error creating appointment.");
-            }
+            alert(data.log || data.error || "Appointment successfully created!"); // Wait for user to press "OK"
+            
+            // Reset the form after alert is acknowledged
+            appointmentForm.reset();  
         } catch (error) {
             console.error("Error submitting appointment:", error);
+            alert("An error occurred while creating the appointment. Please try again.");
         }
     });
 });

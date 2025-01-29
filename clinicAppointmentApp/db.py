@@ -477,7 +477,7 @@ def cancelAppointment(appointmentDetails: dict) -> dict:
     @param appointmentDetails: dictionary with 'appointmentId' and 'confirmationStatus' keys
     """
     # Fetch the appointment from the database
-    appointment = Appointment.query.filter_by(id=appointmentDetails['appointmentId'],appointment_status = 'pending').first()
+    appointment = Appointment.query.filter_by(id=appointmentDetails['appointmentId']).first()
     if not appointment:
         return {"error": "Appointment not found"}, 404
 

@@ -172,7 +172,7 @@ class AppointmentConfirmationSchema(Schema):
 
     @validates('confirmationStatus')
     def validate_confirmation_status(self, value):
-        allowed_statuses = ["confirmed", "cancelled"]
+        allowed_statuses = ["confirmed"] or ["cancelled"]
         if value not in allowed_statuses:
             raise ValidationError(f"Invalid confirmation status. Allowed values: {allowed_statuses}.")
 
@@ -227,8 +227,8 @@ def userProfile():
     anonymous = request.user['user_id']
     from db import fetchRoleById
     role = fetchRoleById({'roleId':roleId})
-    print('>>>>>>>',userName,role['log'])
-    return jsonify({'status':True, "userName":userName,"role":role['log']})
+    print('>>>>>>>',userName,role['log'],anonymous)
+    return jsonify({'status':True, "userName":userName,"role":role['log'],'userId':anonymous})
 
 
 @app.route('/test',methods=['POST'])
@@ -368,8 +368,9 @@ def createAppointment():
     if not newAppointment['status']:
         print('false',newAppointment)
         return newAppointment
-    print('true',newAppointment)
-    return jsonify(newAppointment), 201
+    # print('true',newAppointment)
+    return jsonify({
+        'status':newAppointment['status'],'log':newAppointment['log']}), 201
 
 
 @app.route('/fetchAppointmentsByDoctorIdAndStatus', methods=['POST'])
