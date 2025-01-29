@@ -462,13 +462,33 @@ def confirmAppointment(appointmentDetails: dict) -> dict:
         return {"error": "Appointment not found"}, 404
 
     # Update the confirmation status
-    appointment.confirmation_status = appointmentDetails['confirmationStatus']
+    appointment.appointment_status = appointmentDetails['confirmationStatus']
     db.session.commit()
 
     return {
         "message": "Appointment confirmed successfully",
         "appointmentId": appointment.id,
-        "confirmationStatus": appointment.confirmation_status
+        "confirmationStatus": appointment.appointment_status
+    }, 200
+    
+def cancelAppointment(appointmentDetails: dict) -> dict:
+    """
+    Confirms an appointment in the database.
+    @param appointmentDetails: dictionary with 'appointmentId' and 'confirmationStatus' keys
+    """
+    # Fetch the appointment from the database
+    appointment = Appointment.query.filter_by(id=appointmentDetails['appointmentId'],appointment_status = 'pending').first()
+    if not appointment:
+        return {"error": "Appointment not found"}, 404
+
+    # Update the confirmation status
+    appointment.appointment_status = appointmentDetails['confirmationStatus']
+    db.session.commit()
+
+    return {
+        "message": "Appointment cancelled successfully",
+        "appointmentId": appointment.id,
+        "confirmationStatus": appointment.appointment_status
     }, 200
 
 

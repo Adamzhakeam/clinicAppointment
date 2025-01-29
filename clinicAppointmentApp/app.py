@@ -172,7 +172,7 @@ class AppointmentConfirmationSchema(Schema):
 
     @validates('confirmationStatus')
     def validate_confirmation_status(self, value):
-        allowed_statuses = ["confirmed"]
+        allowed_statuses = ["confirmed", "cancelled"]
         if value not in allowed_statuses:
             raise ValidationError(f"Invalid confirmation status. Allowed values: {allowed_statuses}.")
 
@@ -371,6 +371,7 @@ def createAppointment():
     print('true',newAppointment)
     return jsonify(newAppointment), 201
 
+
 @app.route('/fetchAppointmentsByDoctorIdAndStatus', methods=['POST'])
 def fetchAppointmentsByDoctorIdAndStatus():
     appointmentDetails = request.json
@@ -400,6 +401,24 @@ def confirm_appointment_endpoint():
     result, status_code = confirmAppointment(appointment_details)
     print(result)
     return jsonify(result), status_code
+
+@app.route('/cancelAppointment', methods=['POST'])
+def cancelAppointment():
+    from db import cancelAppointment
+    schema = AppointmentConfirmationSchema()
+    try:
+        # Validate input JSON against the schema
+        appointment_details = schema.load(request.json)
+    except ValidationError as err:
+        # Return validation errors in a clean format
+        print('>>>>>>>>>>>>>>>>>>>>>>>',err.messages)
+        return jsonify({"errors": err.messages}), 400
+
+    # Call the confirmAppointment function
+    result, status_code = cancelAppointment(appointment_details)
+    print(result)
+    return jsonify(result), status_code
+
 
 
 # ---- Roles endpoints ----
