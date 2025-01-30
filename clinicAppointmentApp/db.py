@@ -324,13 +324,16 @@ def insertAppointment(appointmentDetails: dict) -> dict:
         return {'status':True,'log':f"appointment has been scheduled at {newAppointment.appointment_time} on {newAppointment.appointment_date}"}
     return doctorScheduleStatus
 
-# def confirmPendingAppointments(patientId,appointmentTime,appointmentDate):
-#     '''
-#     this module is responsible for confirming pending appointments 
-#     '''
-#     status = 'pending'
-#     appointments = Appointment.query.filter_By(patient_id=patientId,appointment_date=appointmentDate,
-#                                                appointment_time=appointmentTime,appointment_status=status).all
+def fetchConfirmedAppointmentsByPatientId(patientDetails:dict):
+    '''
+    this function fetches all confirmed patient appointments by patient Id
+    @param: patientDetails: dictionary with 'patientId' key
+    '''
+    
+    patientId = patientDetails['patientId']
+    appointments = Appointment.query.filter_by(patient_id=patientId , appointment_status='confirmed').all()
+    response = [{'appointment_date': appointment.appointment_date, 'appointment_time': appointment.appointment_time, 'doctor_id': appointment.doctor_id} for appointment in appointments]
+    return response
 
 def fetchAppointmentsByDoctorIdAndStatus(appointmentDetails: dict):
     '''
@@ -448,7 +451,7 @@ def fetchDoctorAvailabilityByDate(availabilityDetails: dict):
 #     if not appointment:
 #         return {"error": "Appointment not found"}, 404
     
-#     appointment.confirmation_status = appointmentDetails['confirmationStatus']
+#     appointment.appointment_status = appointmentDetails['confirmationStatus']
 #     db.session.commit()
     # return appointment
 def confirmAppointment(appointmentDetails: dict) -> dict:
@@ -498,7 +501,7 @@ def fetchConfirmedAppointmentsByDoctorId(appointmentDetails: dict):
     @param appointmentDetails: dictionary with 'doctorId' key
     '''
     doctor_id = appointmentDetails['doctorId']
-    confirmed_appointments = Appointment.query.filter_by(doctor_id=doctor_id, confirmation_status='confirmed').all()
+    confirmed_appointments = Appointment.query.filter_by(doctor_id=doctor_id, appointment_status='confirmed').all()
     response = [{'appointment_date': appt.appointment_date, 'patient_id': appt.patient_id, 'appointment_time': appt.appointment_time} for appt in confirmed_appointments]
     return response
 
@@ -508,7 +511,17 @@ def fetchConfirmedAppointmentsByPatientId(appointmentDetails: dict):
     @param appointmentDetails: dictionary with 'patientId' key
     '''
     patient_id = appointmentDetails['patientId']
-    confirmed_appointments = Appointment.query.filter_by(patient_id=patient_id, confirmation_status='confirmed').all()
+    confirmed_appointments = Appointment.query.filter_by(patient_id=patient_id, appointment_status='confirmed').all()
+    response = [{'appointment_date': appt.appointment_date, 'doctor_id': appt.doctor_id, 'appointment_time': appt.appointment_time} for appt in confirmed_appointments]
+    return response
+
+def fetchCancelledAppointmentsByPatientId(appointmentDetails: dict):
+    '''
+    Fetches confirmed appointments for a specific patient by their ID.
+    @param appointmentDetails: dictionary with 'patientId' key
+    '''
+    patient_id = appointmentDetails['patientId']
+    confirmed_appointments = Appointment.query.filter_by(patient_id=patient_id, appointment_status='cancelled').all()
     response = [{'appointment_date': appt.appointment_date, 'doctor_id': appt.doctor_id, 'appointment_time': appt.appointment_time} for appt in confirmed_appointments]
     return response
 

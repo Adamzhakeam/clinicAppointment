@@ -5,6 +5,9 @@
 from marshmallow import Schema, fields, ValidationError, validates
 from flask import Flask,request,jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
+import traceback
+from datetime import datetime
 from flask_migrate import Migrate
 from models import db, User, Doctor, Patient, Appointment,Specialisation,AppointmentConfirmation,Roles,DoctorAvailability
 from flask_cors import CORS
@@ -171,7 +174,7 @@ class AppointmentConfirmationSchema(Schema):
     confirmationStatus = fields.Str(required=True, error_messages={"required": "Confirmation status is required."})
 
     @validates('confirmationStatus')
-    def validate_confirmation_status(self, value):
+    def validate_appointment_status(self, value):
         allowed_statuses = ["confirmed"] or ["cancelled"]
         if value not in allowed_statuses:
             raise ValidationError(f"Invalid confirmation status. Allowed values: {allowed_statuses}.")
@@ -326,13 +329,14 @@ def fetchDoctorByPhoneNumber():
 @app.route('/fetchDoctorById', methods=['POST'])
 def fetchDoctorById():
     doctorDetails = request.json
-    errors = validate_request(Schema.from_dict({'doctor_id': fields.Int(required=True)}), doctorDetails)
+    errors = validate_request(Schema.from_dict({'doctorId': fields.Int(required=True)}), doctorDetails)
     if errors:
-        return errors
+        return {'status':False,'log':errors}
     
     from db import fetchDoctorById  # Lazy import
+    print('>>>>>>>>>>>>>>>>>>>>>>>',doctorDetails)
     doctor = fetchDoctorById(doctorDetails)
-    return jsonify(doctor), 200
+    return {'status':True,'log':'','data':{'firstName':doctor['firstName'],'lastName':doctor['lastName']}}, 200
 
 # ---- Patients endpoints ----
 @app.route('/createPatient', methods=['POST'])
@@ -386,6 +390,28 @@ def fetchAppointmentsByDoctorIdAndStatus():
     from db import fetchAppointmentsByDoctorIdAndStatus  # Lazy import
     appointments = fetchAppointmentsByDoctorIdAndStatus(appointmentDetails)
     return jsonify(appointments), 200
+
+@app.route('/fetchAppointmentsByPatientId', methods=['POST'])
+def fetchAppointmentsByPatientId():
+    appointmentDetails = request.json
+    errors = validate_request(Schema.from_dict({'patientId': fields.Int(required=True)}), appointmentDetails)
+    if errors:
+        return {'status':False, 'log':errors}
+    
+    from db import fetchConfirmedAppointmentsByPatientId
+    appointments = fetchConfirmedAppointmentsByPatientId(appointmentDetails)
+    return jsonify({'status':True,'log':'','data':appointments}), 200
+
+@app.route('/fetchCancelledAppointmentsByPatientId', methods=['POST'])
+def fetchCancelledAppointmentsByPatientId():
+    appointmentDetails = request.json
+    errors = validate_request(Schema.from_dict({'patientId': fields.Int(required=True)}), appointmentDetails)
+    if errors:
+        return {'status':False, 'log':errors}
+    
+    from db import fetchCancelledAppointmentsByPatientId
+    appointments = fetchCancelledAppointmentsByPatientId(appointmentDetails)
+    return jsonify({'status':True,'log':'','data':appointments}), 200
 
 @app.route('/confirmAppointment', methods=['POST'])
 def confirm_appointment_endpoint():
@@ -484,16 +510,16 @@ def createDoctorAvailability():
     newAvailability = insertDoctorAvailability(availabilityDetails)
     return jsonify(newAvailability), 201
 
-@app.route('/fetchDoctorAvailabilityByDoctorId', methods=['POST'])
-def fetchDoctorAvailabilityByDoctorId():
+@app.route('/fetchDoctorByDoctorId', methods=['POST'])
+def fetchDoctorByDoctorId():
     availabilityDetails = request.json
-    errors = validate_request(Schema.from_dict({'doctor_id': fields.Int(required=True)}), availabilityDetails)
+    errors = validate_request(Schema.from_dict({'doctorId': fields.Int(required=True)}), availabilityDetails)
     if errors:
-        return errors
+        return {'status':False,'log':errors}
     
-    from db import fetchDoctorAvailabilityByDoctorId  # Lazy import
-    availability = fetchDoctorAvailabilityByDoctorId(availabilityDetails)
-    return jsonify(availability), 200
+    from db import fetchDoctorById  # Lazy import
+    response = fetchDoctorById(availabilityDetails)
+    return jsonify({'status':True,'log':'','data':response}), 200
 
 if __name__ == '__main__':
     with app.app_context():

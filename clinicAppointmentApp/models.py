@@ -71,7 +71,7 @@ class AppointmentConfirmation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=False)
     confirmed_by = db.Column(db.Integer, db.ForeignKey('users.userId'), nullable=False)  # Front desk user confirming the appointment
-    confirmation_status = db.Column(db.String(50), nullable=False)  # e.g., "Confirmed", "Pending", "Canceled"
+    appointment_status = db.Column(db.String(50), nullable=False)  # e.g., "Confirmed", "Pending", "Canceled"
     confirmation_date = db.Column(db.DateTime, nullable=False)
 
     appointment = db.relationship('Appointment', backref='confirmation')
