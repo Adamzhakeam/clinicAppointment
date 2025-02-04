@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         const data = await response.json();
-        data.forEach((spec) => {
+        data.data.forEach((spec) => {
             const option = document.createElement('option');
             option.value = spec.specializationId;
             option.textContent = spec.specializationName;

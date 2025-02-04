@@ -532,7 +532,9 @@ def createSpecialisation():
 def fetchAllSpecialisations():
     from db import fetchAllSpecialisations  # Lazy import
     specialisations = fetchAllSpecialisations()
-    return jsonify(specialisations), 200
+    if specialisations['status']:
+        return jsonify(specialisations), 200
+    return jsonify(specialisations), 404
 
 @app.route('/fetchSpecialisationById', methods=['POST'])
 def fetchSpecialisationById():

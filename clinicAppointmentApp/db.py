@@ -398,8 +398,10 @@ def fetchAllSpecialisations():
     Fetches all specialisations from the database.
     '''
     specialisations = Specialisation.query.all()
+    if not specialisations:
+        return {'status':False,'log':'no specialisation found'}
     response = [{'specializationId':spec.id,'specializationName': spec.specializationName} for spec in specialisations]
-    return response
+    return {'status':'True','log':'','data':response}
 
 def fetchSpecialisationById(specialisationDetails: dict):
     '''
