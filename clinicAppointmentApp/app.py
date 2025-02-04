@@ -424,6 +424,30 @@ def fetchCancelledAppointmentsByPatientId():
     appointments = fetchCancelledAppointmentsByPatientId(appointmentDetails)
     return jsonify({'status':True,'log':'','data':appointments}), 200
 
+@app.route('fetchAllPendingAppointments',methods=['POST'])
+def fetchAllConfirmedAppointments():
+    from db import fetchAllPendingAppointments
+    appointments = fetchAllPendingAppointments()
+    if appointments['status']:
+        return jsonify(appointments),200
+    return jsonify(appointments)
+    
+@app.route('fetchAllConfirmedAppointments',methods=['POST'])
+def fetchAllConfirmedAppointments():
+    from db import fetchAllConfirmedAppointments
+    appointments = fetchAllConfirmedAppointments()
+    if appointments['status']:
+        return jsonify(appointments),200
+    return jsonify(appointments)
+
+@app.route('fetchAllCancelledAppointments',methods=['POST'])
+def fetchAllConfirmedAppointments():
+    from db import fetchAllConfirmedAppointments
+    appointments = fetchAllConfirmedAppointments()
+    if appointments['status']:
+        return jsonify(appointments),200
+    return jsonify(appointments)
+
 @app.route('/confirmAppointment', methods=['POST'])
 def confirm_appointment_endpoint():
     from db import confirmAppointment

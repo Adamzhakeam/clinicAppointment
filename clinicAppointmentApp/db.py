@@ -494,7 +494,37 @@ def cancelAppointment(appointmentDetails: dict) -> dict:
         "confirmationStatus": appointment.appointment_status
     }, 200
 
+def fetchAllPendingAppointments()->dict:
+    '''
+        THis function  is responsible for fetching all pending appointments 
+    '''
+    pendingAppointments =Appointment.Query.filter_by(appointment_status='pending').all()
+    if not pendingAppointments:
+        return {'status':False,'log':'no pending appointments'}
+    response = [{'appointment_date': appointment.appointment_date, 'appointment_time': appointment.appointment_time, 'doctor_id': appointment.doctor_id, 'patient_id': appointment.patient_id} for appointment in pendingAppointments]
+    return {'status':True,'log':response}
 
+def fetchAllConfirmedAppointments()->dict:
+    '''
+        THis function  is responsible for fetching all confirmed appointments 
+    '''
+    pendingAppointments =Appointment.Query.filter_by(appointment_status='confirmed').all()
+    if not pendingAppointments:
+        return {'status':False,'log':'no confirmed appointments'}
+    response = [{'appointment_date': appointment.appointment_date, 'appointment_time': appointment.appointment_time, 'doctor_id': appointment.doctor_id, 'patient_id': appointment.patient_id} for appointment in pendingAppointments]
+    return {'status':True,'log':response}
+
+def fetchAllCancelledAppointments()->dict:
+    '''
+        THis function  is responsible for fetching all cancelled appointments 
+    '''
+    pendingAppointments =Appointment.Query.filter_by(appointment_status='cancelled').all()
+    if not pendingAppointments:
+        return {'status':False,'log':'no cancelled appointments'}
+    response = [{'appointment_date': appointment.appointment_date, 'appointment_time': appointment.appointment_time, 'doctor_id': appointment.doctor_id, 'patient_id': appointment.patient_id} for appointment in pendingAppointments]
+    return {'status':True,'log':response}
+
+    
 def fetchConfirmedAppointmentsByDoctorId(appointmentDetails: dict):
     '''
     Fetches confirmed appointments for a specific doctor by their ID.
