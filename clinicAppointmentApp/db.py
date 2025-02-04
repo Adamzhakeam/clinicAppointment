@@ -292,9 +292,19 @@ def fetchAllPatients():
     Fetches all patients from the database.
     '''
     patients = Patient.query.all()
-    response = [{'patientId':patient.id,'firstName': patient.firstName, 'lastName': patient.lastName, "email": patient.email, "phone": patient.phone} for patient in patients]
+    response =[{'patientId':patient.id,'firstName': patient.firstName, 'lastName': patient.lastName, "email": patient.email, "phone": patient.phone} for patient in patients]
     return response
 
+def fetchPatientById(patientDetails:dict)->dict:
+    '''
+        this function si responsible for fetching patient by Id 
+        @param:patientId is the require key in the dictionary 
+    '''
+    patient = Patient.query.filter_by(id=patientDetails['patientId']).first()
+    if not patient:
+        return({'status':False,'log':'patient registered to Id not found visit reception'})
+    return({'status':True,'log':{'firstName': patient.firstName, 'lastName': patient.lastName, 
+                                 "email": patient.email, "phone": patient.phone}})
 
 # ---- Appointments database logic ----
 def insertAppointment(appointmentDetails: dict) -> dict:
@@ -498,7 +508,7 @@ def fetchAllPendingAppointments()->dict:
     '''
         THis function  is responsible for fetching all pending appointments 
     '''
-    pendingAppointments =Appointment.Query.filter_by(appointment_status='pending').all()
+    pendingAppointments =Appointment.query.filter_by(appointment_status='pending').all()
     if not pendingAppointments:
         return {'status':False,'log':'no pending appointments'}
     response = [{'appointment_date': appointment.appointment_date, 'appointment_time': appointment.appointment_time, 'doctor_id': appointment.doctor_id, 'patient_id': appointment.patient_id} for appointment in pendingAppointments]
@@ -508,7 +518,7 @@ def fetchAllConfirmedAppointments()->dict:
     '''
         THis function  is responsible for fetching all confirmed appointments 
     '''
-    pendingAppointments =Appointment.Query.filter_by(appointment_status='confirmed').all()
+    pendingAppointments =Appointment.query.filter_by(appointment_status='confirmed').all()
     if not pendingAppointments:
         return {'status':False,'log':'no confirmed appointments'}
     response = [{'appointment_date': appointment.appointment_date, 'appointment_time': appointment.appointment_time, 'doctor_id': appointment.doctor_id, 'patient_id': appointment.patient_id} for appointment in pendingAppointments]
@@ -518,7 +528,7 @@ def fetchAllCancelledAppointments()->dict:
     '''
         THis function  is responsible for fetching all cancelled appointments 
     '''
-    pendingAppointments =Appointment.Query.filter_by(appointment_status='cancelled').all()
+    pendingAppointments =Appointment.query.filter_by(appointment_status='cancelled').all()
     if not pendingAppointments:
         return {'status':False,'log':'no cancelled appointments'}
     response = [{'appointment_date': appointment.appointment_date, 'appointment_time': appointment.appointment_time, 'doctor_id': appointment.doctor_id, 'patient_id': appointment.patient_id} for appointment in pendingAppointments]
