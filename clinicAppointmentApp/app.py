@@ -175,9 +175,20 @@ class AppointmentConfirmationSchema(Schema):
 
     @validates('confirmationStatus')
     def validate_appointment_status(self, value):
-        allowed_statuses = ["confirmed"] or ["cancelled"]
+        allowed_statuses = ["confirmed"] 
         if value not in allowed_statuses:
             raise ValidationError(f"Invalid confirmation status. Allowed values: {allowed_statuses}.")
+
+class AppointmentCancellationSchema(Schema):
+    appointmentId = fields.Int(required=True, error_messages={"required": "Appointment ID is required."})
+    confirmationStatus = fields.Str(required=True, error_messages={"required": "Cancellation status is required."})
+
+    @validates('confirmationStatus')
+    def validate_appointment_status(self, value):
+        allowed_statuses = ["cancelled"] 
+        if value not in allowed_statuses:
+            raise ValidationError(f"Invalid confirmation status. Allowed values: {allowed_statuses}.")
+
 
 
 # Utility function for validation
@@ -432,7 +443,7 @@ def confirm_appointment_endpoint():
 @app.route('/cancelAppointment', methods=['POST'])
 def cancelAppointment():
     from db import cancelAppointment
-    schema = AppointmentConfirmationSchema()
+    schema = AppointmentCancellationSchema()
     try:
         # Validate input JSON against the schema
         appointment_details = schema.load(request.json)
