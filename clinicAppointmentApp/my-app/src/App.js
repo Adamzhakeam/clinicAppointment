@@ -1,12 +1,16 @@
 import React from "react";
-// import NavBar from "./components/NavBar/NavBar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar/NavBar"; // Navigation Bar
-import Login from "./components/Login/Login";
-import UserDashboard from "./components/UserDashboard/UserDashboard";
-import UserRegistration from "./components/UserRegistration/UserRegistration";
-import DoctorRegistration from "./components/DoctorRegistration/DoctorRegistration";
-import PatientRegistration from "./components/PatientRegistration/PatientRegistration";
+import Login from "./Login"; // Root/Index Page
+import Dashboard from "./Dashboard"; // Dashboard Page
+import CreateUser from "./CreateUser"; // Create User Page
+import DoctorRegistration from "./DoctorRegistration"; // Doctor Registration Page
+import RegisterSpecialisation from "./RegisterSpecialisation"; // Specialization Registration Page
+import CreateAppointment from "./CreateAppointment"; // Create Appointment Page
+import PatientLogin from "./PatientLogin"; // Patient Login Page
+import PatientDashboard from "./PatientDashboard"; // Patient Dashboard Page
+import ConfirmedAppointments from "./ConfirmedAppointments"; // Confirmed Appointments Page
+import CancelledAppointments from "./CancelledAppointments"; // Cancelled Appointments Page
 
 function App() {
   return (
@@ -14,11 +18,25 @@ function App() {
       <div className="App">
         <NavBar />
         <Routes>
+          {/* Root/Index Route */}
           <Route path="/" element={<Login />} />
-          {/* <Route path="/dashboard" element={<UserDashboard />} /> */}
-          {/* <Route path="/register-user" element={<UserRegistration />} /> */}
-          {/* <Route path="/register-doctor" element={<DoctorRegistration />} /> */}
-          {/* <Route path="/register-patient" element={<PatientRegistration />} /> */}
+
+          {/* Dashboard Route */}
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* User Management Routes */}
+          <Route path="/create-user" element={<CreateUser />} />
+          <Route path="/register-doctor" element={<DoctorRegistration />} />
+          <Route path="/register-specialisation" element={<RegisterSpecialisation />} />
+
+          {/* Appointment Management Routes */}
+          <Route path="/create-appointment" element={<CreateAppointment />} />
+          <Route path="/confirmed-appointments" element={<ConfirmedAppointments />} />
+          <Route path="/cancelled-appointments" element={<CancelledAppointments />} />
+
+          {/* Patient-Specific Routes */}
+          <Route path="/patient-login" element={<PatientLogin />} />
+          <Route path="/patient-dashboard" element={<PatientDashboard />} />
         </Routes>
       </div>
     </Router>
