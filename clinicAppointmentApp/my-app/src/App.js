@@ -1,16 +1,16 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar/NavBar"; // Navigation Bar
-import Login from "./Login"; // Root/Index Page
-import Dashboard from "./Dashboard"; // Dashboard Page
-import CreateUser from "./CreateUser"; // Create User Page
-import DoctorRegistration from "./DoctorRegistration"; // Doctor Registration Page
-import RegisterSpecialisation from "./RegisterSpecialisation"; // Specialization Registration Page
-import CreateAppointment from "./CreateAppointment"; // Create Appointment Page
-import PatientLogin from "./PatientLogin"; // Patient Login Page
-import PatientDashboard from "./PatientDashboard"; // Patient Dashboard Page
-import ConfirmedAppointments from "./ConfirmedAppointments"; // Confirmed Appointments Page
-import CancelledAppointments from "./CancelledAppointments"; // Cancelled Appointments Page
+import Login from "./components/Login"; // Root/Index Page
+import Dashboard from "./components/Dashboard"; // Dashboard Page
+import CreateUser from "./components/CreateUser"; // Create User Page
+import DoctorRegistration from "./components/DoctorRegistration"; // Doctor Registration Page
+import RegisterSpecialisation from "./components/RegisterSpecialisation"; // Specialization Registration Page
+import CreateAppointment from "./components/CreateAppointment"; // Create Appointment Page
+import PatientLogin from "./components/PatientLogin"; // Patient Login Page
+import PatientDashboard from "./components/PatientDashboard"; // Patient Dashboard Page
+import ConfirmedAppointments from "./components/ConfirmedAppointments"; // Confirmed Appointments Page
+import CancelledAppointments from "./components/CancelledAppointments"; // Cancelled Appointments Page
 
 function App() {
   return (
